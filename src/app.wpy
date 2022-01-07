@@ -57,13 +57,31 @@ wepy.app({
 {
     pages: [
       'pages/index',
-      'pages/test'
+      'pages/init'
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black'
+    },
+    tabBar:{
+      list: [{
+      pagePath: "pages/index",
+      text: "首页"
+    }, {
+      pagePath: "pages/init",
+      text: "购物车"
+    }, {
+      pagePath: "pages/init",
+      text: "发布"
+    }, {
+      pagePath: "pages/init",
+      text: "消息"
+    }, {
+      pagePath: "pages/init",
+      text: "我的"
+    }]
     }
 }
 </config>
