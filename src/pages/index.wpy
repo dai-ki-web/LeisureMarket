@@ -3,6 +3,8 @@
   {{text}}
   1111
   <comTest v-for="item in items" id="{{item}}"></comTest>
+  ???
+  <l-Button>发送</l-Button>
 </div>
 </template>
 
@@ -24,7 +26,8 @@ wepy.page({
 <config>
 {
   usingComponents:{
-    comTest:'../components/com-test'
+    comTest:'../components/com-test',
+    'l-Button':'../components/lin-ui/button/index',
   }
 }
 </config>
