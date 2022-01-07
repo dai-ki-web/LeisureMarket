@@ -1,0 +1,15 @@
+<template>
+  <div>
+    {{text}}
+  </div>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+
+wepy.component({
+  data: {
+    text: 'componenets-----------teststtttt'
+  }
+})
+</script>
