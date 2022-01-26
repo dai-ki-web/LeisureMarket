@@ -57,7 +57,8 @@ wepy.app({
 {
     pages: [
       'pages/index',
-      'pages/init'
+      'pages/init',
+      'pages/publish/pub'
     ],
     window: {
       backgroundTextStyle: 'light',
