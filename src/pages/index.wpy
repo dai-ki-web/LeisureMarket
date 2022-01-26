@@ -1,9 +1,5 @@
 <template>
   <view :id="id">
-    <SearchBar
-      placeholder="搜索"
-      :showCancel="false"
-    />
     <view style="display:flex">
       <display-card
         v-for="item in items"
@@ -63,7 +59,6 @@ wepy.page({
 {
   usingComponents:{
     'display-card':'../components/display-card',
-    SearchBar:'../components/lin-ui/search-bar/index',
 
   }
 }

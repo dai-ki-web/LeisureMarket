@@ -1,83 +1,6 @@
 <template>
   <view>
-    <Form name="form">
-      <FormItem name="introduction">
-        <Textarea
-          maxlength="-1"
-          id="introduction"
-          placeholder="简单介绍下。。。"
-          indicator="{{false}}"
-          auto-height
-          border
-          style="width:100%;height:400rpx"
-          @lininput="onInputIntro"
-          value="{{form.introduction}}"
-        />
-        </FormItem>
-      <!-- <FormItem name="img">
-        <ImagePicker id="img" size="3" @linchange="onAddImg" value="{{form.img}}"/>
-      </FormItem> -->
-      <!-- <FormItem label="分类" name="class">
-        <Input
-          id="class"
-          value="{{form.class}}"
-          hide-label
-          show-row="{{false}}"
-          disabled
-          @click="showNumberInput"
-        />
-        </FormItem>
-        <FormItem label="成色" name="condition">
-        <Input
-        id="condition"
-          value="{{form.condition}}"
-          hide-label
-          show-row="{{false}}"
-          disabled
-          @click="showNumberInput"
-        />
-        </FormItem>
-        <FormItem label="功能" name="ability">
-        <Input
-        id="ability"
-          value="{{form.ability}}"
-          hide-label
-          show-row="{{false}}"
-          disabled
-          @click="showNumberInput"
-        />
-        </FormItem>
-        <FormItem label="价格" name="price">
-        <Input
-        id="price"
-          value="{{form.price}}"
-          hide-label
-          show-row="{{false}}"
-          disabled
-          @click="showNumberInput"
-        />
-        </FormItem> -->
-        <view slot="submit">
-        <Button>提交</Button>
-    </view>
-  </Form>
 
-
-  <!-- <ArcPopup show="{{popupShow}}" direction="bottom" min-heigth="500" l-panel-class="test" @linclose="popupClose">
-<picker-view  indicator-style="height: 50px;" style="width: 100%; height: 300px;" @change="test">
-  <picker-view-column>
-        <view  style="line-height: 50px; text-align: center;">2年</view>
-        <view  style="line-height: 50px; text-align: center;">2年</view>
-        <view  style="line-height: 50px; text-align: center;">2年</view>
-        <view  style="line-height: 50px; text-align: center;">2年</view>
-      </picker-view-column>
-      <picker-view-column>
-        <view v-for="(item,index) in testData" :key="index" style="line-height: 50px; text-align: center;">
-          {{item}}
-          </view>
-      </picker-view-column>
-</picker-view>
-  </ArcPopup> -->
   </view>
 </template>
 
@@ -156,23 +79,11 @@ wepy.component({
       }
     }
   },
-  onLoad: function() {
-    wx.lin.initValidateForm(this);
-  }
 });
 </script>
 <config>
 {
   usingComponents:{
-    Textarea:'../../components/lin-ui/textarea/index',
-    ImagePicker:'../../components/lin-ui/image-picker/index',
-    Form:'../../components/lin-ui/form/index',
-    FormItem:'../../components/lin-ui/form-item/index',
-    Input:'../../components/lin-ui/input/index',
-    ArcPopup:'../../components/lin-ui/arc-popup/index',
-    Radio:'../../components/lin-ui/radio/index',
-    Button:'../../components/lin-ui/button/index',
-    RadioGroup:'../../components/lin-ui/radio-group/index'
   }
 }
 </config>
