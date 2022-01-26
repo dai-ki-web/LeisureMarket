@@ -16,6 +16,7 @@
   "author": "daiki_wu <954083089@qq.com>",
   "license": "MIT",
   "dependencies": {
+    "@vant/weapp": "^1.10.2",
     "@wepy/core": "^2.0.0-alpha.16",
     "@wepy/x": "^2.0.2",
     "miniprogram-slide-view": "0.0.3",
