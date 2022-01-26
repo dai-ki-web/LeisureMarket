@@ -1,37 +1,105 @@
 <template>
   <view>
     <van-cell-group>
-      <van-button type="default">默认按钮</van-button>
-      <van-button type="primary">主要按钮</van-button>
-      <van-button type="info">信息按钮</van-button>
-      <van-button type="warning">警告按钮</van-button>
-      <van-button type="danger">危险按钮</van-button>
       <van-field
-        value="{{ value }}"
-        placeholder="请输入用户名"
-        border="{{ false }}"
-        bind:change="onChange"
+        type="textarea"
+        :autosize="{minHeight:100}"
+        :value="form.introduction"
+        placeholder="简单介绍一下..."
+        :border="true"
       />
-    </van-cell-group>
-  </view>
+      <van-cell>
+        <van-uploader
+          :file-list=" imgList "
+          @after-read="afterRead"
+          @oversize="oversize"
+          multiple
+          max-size="1048576"
+          max-count="9"
+        />
+      </van-cell>
 
+      <van-cell
+        title="分类"
+        @click="showPopup=true"
+      >
+        {{classFormatter}}
+      </van-cell>
+      <van-cell
+        title="成色"
+        @click="showPopup=true"
+      >
+        {{classFormatter}}
+      </van-cell>
+      <van-cell
+        title="功能"
+        @click="showPopup=true"
+      >
+        {{classFormatter}}
+      </van-cell>
+      <van-cell title="价格">
+        <van-field
+          label="￥"
+          type="number "
+          :value="form.price"
+          :border="true"
+          input-align="right"
+        />
+      </van-cell>
+    </van-cell-group>
+    <van-button
+      type="primary"
+      custom-style="width:70%;display: flex;align-items: center;margin:50px"
+    >发布</van-button>
+
+    <!-- 弹出层 -->
+    <van-popup
+      :show="showPopup"
+      @close="onClose"
+      position="bottom"
+    >
+      <van-picker
+        type="textarea"
+        title="分类"
+        :show-toolbar="true"
+        :columns="classOptions"
+        @change="onClassChange"
+        @confirm="onConfirm"
+        value-key="label"
+      />
+    </van-popup>
+  </view>
 </template>
 
 <script>
-import wepy from '@wepy/core';
+import wepy from '@wepy/core'
+import Toast from '../../components/vant/toast/toast'
+
+const classes = {
+  图书: ['教辅', '小说', '社科'],
+  美妆: ['粉底', '眼影', '腮红']
+}
 wepy.component({
   props: {},
   data: {
-    value: '11',
+    classes: [],
+    value: '2121',
+    imgList: [],
     testData: ['a', 'b', 'c'],
-    img: undefined,
     form: {
       introduction: '',
-      img: [],
       conditon: undefined,
       ability: undefined
     },
-    popupShow: false,
+    showPopup: false,
+    classOptions: [
+      {
+        values: Object.keys(classes)
+      },
+      {
+        values: classes['图书']
+      }
+    ],
     conditonOptions: [
       {
         value: 0,
@@ -69,38 +137,50 @@ wepy.component({
       }
     ]
   },
+  computed: {
+    classFormatter() {
+      return this.classes.join('/')
+    }
+  },
   methods: {
-    bindPickerChange: function($event) {
-      console.log('picker发送选择改变，携带值为', $event.$wx.detail.value);
-      this.index = $event.$wx.detail.value;
+    afterRead($event) {
+      let { file } = $event.$wx.detail
+      console.log(file)
     },
-    showNumberInput() {
-      this.popupShow = true;
+    oversize() {
+      Toast('图片大小不能超过1M！')
     },
-    popupClose() {
-      this.popupShow = false;
+    onClassChange($event) {
+      const { picker, value, index } = $event.$wx.detail
+      console.log({ picker, value, index })
+      picker.setColumnValues(1, classes[value[0]])
     },
-    onAddImg($event) {
-      this.form.img = $event.$wx.detail.all;
+    onClose() {
+      this.showPopup = false
     },
-    onInputIntro($event) {
-      this.form.introduction = $event.$wx.detail.value;
+    onChange($event) {
+      this.form.introduction = $event.$wx.detail
     },
-    test($event) {
-      let res = $event.$wx.detail.value;
-      if (res[0] === 1) {
-        this.testData = [1, 2, 3];
-      }
+    onConfirm($event) {
+      const { value, index } = $event.$wx.detail
+      this.classes = value
+      this.form.class = index
+      this.showPopup = false
     }
   }
-});
+})
 </script>
 <config>
 {
   usingComponents:{
     'van-field':'../../components/vant/field',
     'van-button':'../../components/vant/button',
-    'van-cell-group':'../../components/vant/cell-group'
+    'van-cell-group':'../../components/vant/cell-group',
+    'van-cell':'../../components/vant/cell',
+    'van-uploader':'../../components/vant/uploader',
+    'van-picker':'../../components/vant/picker',
+    'van-popup':'../../components/vant/popup',
+
   }
 }
 </config>
