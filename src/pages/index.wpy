@@ -1,7 +1,7 @@
 <template>
   <view :id="id">
     <view style="display:flex">
-      <display-card
+      <Card
         v-for="item in items"
         :image="item.image"
         :key="item.id"
@@ -10,10 +10,9 @@
         :price="item.price"
         :user-id="item.userId"
         :user-icon="item.userItem"
-      ></display-card>
+      ></Card>
     </view>
 
-    <button @click="turnTo">to pub</button>
   </view>
 </template>
 
@@ -58,8 +57,7 @@ wepy.page({
 <config>
 {
   usingComponents:{
-    'display-card':'../components/display-card',
-
+    'Card':'../components/Card',
   }
 }
 </config>
