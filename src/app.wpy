@@ -19,7 +19,7 @@ wepy.app({
   hooks: {
     // App 级别 hook，对整个 App 生效
     // 同时存在 Page hook 和 App hook 时，优先执行 Page hook，返回值再交由 App hook 处
-    'before-setData': function (dirty) {
+    'before-setData': function(dirty) {
       console.log('setData dirty: ', dirty)
       return dirty
     }
@@ -37,8 +37,7 @@ wepy.app({
   },
 
   methods: {
-
-    sleep (s) {
+    sleep(s) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve('promise resolved')
@@ -46,7 +45,7 @@ wepy.app({
       })
     },
 
-    async testAsync () {
+    async testAsync() {
       let d = await this.sleep(3)
       console.log(d)
     }
@@ -58,7 +57,9 @@ wepy.app({
     pages: [
       'pages/index',
       'pages/init',
-      'pages/publish/pub'
+      'pages/publish/pub',
+      'pages/cart',
+      
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -71,7 +72,7 @@ wepy.app({
       pagePath: "pages/index",
       text: "首页"
     }, {
-      pagePath: "pages/init",
+      pagePath: "pages/cart",
       text: "购物车"
     }, {
       pagePath: "pages/init",

@@ -19,7 +19,13 @@
           "scene": null
         },
         {
-          "name": "pages/pub",
+          "name": "pages/cart",
+          "pathName": "pages/cart",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/publish/pub",
           "pathName": "pages/publish/pub",
           "query": "",
           "scene": null

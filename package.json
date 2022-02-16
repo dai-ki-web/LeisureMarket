@@ -20,6 +20,7 @@
     "@wepy/core": "^2.0.0-alpha.16",
     "@wepy/x": "^2.0.2",
     "miniprogram-slide-view": "0.0.3",
+    "node-sass": "^7.0.1",
     "path": "^0.12.7"
   },
   "devDependencies": {

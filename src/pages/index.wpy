@@ -1,5 +1,12 @@
 <template>
   <view :id="id">
+    <van-search
+      value="{{ value }}"
+      shape="round"
+      background="#4fc08d"
+      placeholder="请输入搜索关键词"
+      disabled
+    />
     <view style="display:flex">
       <Card
         v-for="item in items"
@@ -8,8 +15,8 @@
         :title="item.title"
         :describe="item.describe"
         :price="item.price"
-        :user-id="item.userId"
-        :user-icon="item.userItem"
+        :userId="item.userId"
+        :userIcon="item.userIcon"
       ></Card>
     </view>
 
@@ -17,47 +24,50 @@
 </template>
 
 <script>
-import wepy from '@wepy/core';
+import wepy from '@wepy/core'
 wepy.page({
   data: {
+    value: '',
     items: [
       {
         id: 9988,
         image:
           'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d',
-        title: '显瘦中长款系带风',
-        describe: '柔软顺滑、上身挺括显瘦，垂坠飘逸、不易皱好打理。',
-        price: 888,
-        uerId: 1,
-        userIcon:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d'
-      },
-      {
-        id: 9988,
-        image:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d',
-        title: '显瘦中长款系带风衣',
+        title:
+          '显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣',
         describe: '柔软顺滑、上身挺括显瘦，垂坠飘逸、不易皱好打理。',
         price: 888,
         uerId: 1,
         userIcon:
           'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d'
       }
+      // {
+      //   id: 9988,
+      //   image:
+      //     'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d',
+      //   title: '显瘦中长款系带风衣',
+      //   describe: '柔软顺滑、上身挺括显瘦，垂坠飘逸、不易皱好打理。',
+      //   price: 888,
+      //   uerId: 1,
+      //   userIcon:
+      //     'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d'
+      // }
     ]
   },
   created() {},
   methods: {
     turnTo() {
-      this.$navigate({ url: 'publish/pub' });
+      this.$navigate({ url: 'publish/pub' })
     }
   }
-});
+})
 </script>
 
 <config>
 {
   usingComponents:{
     'Card':'../components/Card',
+    'van-search':'../components/vant/search',
   }
 }
 </config>
