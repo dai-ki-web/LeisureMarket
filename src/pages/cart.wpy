@@ -68,6 +68,14 @@ wepy.page({
       this.result = $event.$wx.detail
       console.log($event.$wx.detail)
     }
+  },
+  onShow() {
+    if (this.$wx && typeof this.$wx.getTabBar === 'function') {
+      const tabBar = this.$wx.getTabBar()
+      tabBar.setData({
+        selected: 1 // 由于Application是第一个tab页
+      })
+    }
   }
 })
 </script>

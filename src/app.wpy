@@ -68,6 +68,7 @@ wepy.app({
       navigationBarTextStyle: 'black'
     },
     tabBar:{
+      custom: true,
       list: [{
       pagePath: "pages/index",
       text: "首页"

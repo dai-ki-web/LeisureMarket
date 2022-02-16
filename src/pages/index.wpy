@@ -59,6 +59,14 @@ wepy.page({
     turnTo() {
       this.$navigate({ url: 'publish/pub' })
     }
+  },
+  onShow() {
+    if (this.$wx && typeof this.$wx.getTabBar === 'function') {
+      const tabBar = this.$wx.getTabBar()
+      tabBar.setData({
+        selected: 0 // 由于Application是第一个tab页
+      })
+    }
   }
 })
 </script>

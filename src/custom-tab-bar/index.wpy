@@ -1,0 +1,225 @@
+<!-- index.wpy -->
+<template>
+  <cover-view class="tab-bar">
+    <cover-view class="border"></cover-view>
+    <cover-view
+      wx:for="{{list}}"
+      wx:key="index"
+      class="item"
+      data-path="{{item.pagePath}}"
+      data-index="{{index}}"
+      @tap="switchTab($event)"
+    >
+      <!--  -->
+      <cover-view
+        wx:if="{{badge[index]}}"
+        class="badge"
+      >{{badge[index]}}</cover-view>
+      <!-- <cover-image src="{{selected === index ? item.selectedIconPath : item.iconPath}}" /> -->
+      <cover-view style="color: {{selected === index ? selectedColor : color}}">{{item.text}}</cover-view>
+    </cover-view>
+  </cover-view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+wepy.component({
+  data: {
+    badge: {},
+    selected: 0,
+    color: '#7A7E83',
+    selectedColor: '#6280f5',
+    list: [
+      {
+        // selectedIconPath: '../images/tab_application_pre.png',
+        // iconPath: '../images/tab_application.png',
+        pagePath: 'pages/index',
+        text: '首页'
+      },
+      {
+        // selectedIconPath: '../images/tab_news_pre.png',
+        // iconPath: '../images/tab_news.png',
+        pagePath: 'pages/cart',
+        text: '购物车'
+      },
+      {
+        // selectedIconPath: '../images/tab_message_pre.png',
+        // iconPath: '../images/tab_message.png',
+        pagePath: 'pages/init',
+        text: '发布'
+      },
+      {
+        // selectedIconPath: '../images/tab_mine_pre.png',
+        // iconPath: '../images/tab_mine.png',
+        pagePath: 'pages/init',
+        text: '消息'
+      },
+      {
+        // selectedIconPath: '../images/tab_mine_pre.png',
+        // iconPath: '../images/tab_mine.png',
+        pagePath: 'pages/init',
+        text: '我的'
+      }
+    ]
+  },
+  attached() {},
+  methods: {
+    switchTab(e) {
+      const data = e.currentTarget.dataset
+      const url = data.path.split('/')[1]
+      wx.switchTab({ url })
+      // this.setData({
+      //   selected: data.index
+      // })
+    },
+    setTabBarBadge(options) {
+      if (!options) return
+      const { index, text } = options
+      const badge = this.data.badge || {}
+      badge[index] = text
+      this.setData({
+        badge
+      })
+    },
+    removeTabBarBadge(options) {
+      if (!options || options.index === undefined) return
+      const { index } = options
+      const badge = this.data.badge || {}
+      badge[index] = null
+      this.setData({
+        badge
+      })
+    }
+  }
+})
+// 此处使用的是原生创建组件的方式，保证编译后符合官方推荐的格式。
+// Component({
+//   data: {
+//     badge: {},
+//     selected: 0,
+//     color: '#7A7E83',
+//     selectedColor: '#6280f5',
+//     list: [
+//       {
+//         // selectedIconPath: '../images/tab_application_pre.png',
+//         // iconPath: '../images/tab_application.png',
+//         pagePath: 'pages/index',
+//         text: '首页'
+//       },
+//       {
+//         // selectedIconPath: '../images/tab_news_pre.png',
+//         // iconPath: '../images/tab_news.png',
+//         pagePath: 'pages/cart',
+//         text: '购物车'
+//       },
+//       {
+//         // selectedIconPath: '../images/tab_message_pre.png',
+//         // iconPath: '../images/tab_message.png',
+//         pagePath: 'pages/init',
+//         text: '发布'
+//       },
+//       {
+//         // selectedIconPath: '../images/tab_mine_pre.png',
+//         // iconPath: '../images/tab_mine.png',
+//         pagePath: 'pages/init',
+//         text: '消息'
+//       },
+//       {
+//         // selectedIconPath: '../images/tab_mine_pre.png',
+//         // iconPath: '../images/tab_mine.png',
+//         pagePath: 'pages/init',
+//         text: '我的'
+//       }
+//     ]
+//   },
+//   attached() {
+//     console.log('1')
+//   },
+//   methods: {
+//     switchTab(e) {
+//       console.log('switch')
+//       const data = e.currentTarget.dataset
+//       const url = data.path
+//       wx.switchTab({ url })
+//       this.setData({
+//         selected: data.index
+//       })
+//     },
+//     setTabBarBadge(options) {
+//       if (!options) return
+//       const { index, text } = options
+//       const badge = this.data.badge || {}
+//       badge[index] = text
+//       this.setData({
+//         badge
+//       })
+//     },
+//     removeTabBarBadge(options) {
+//       if (!options || options.index === undefined) return
+//       const { index } = options
+//       const badge = this.data.badge || {}
+//       badge[index] = null
+//       this.setData({
+//         badge
+//       })
+//     }
+//   }
+// })
+
+// NOTE: 此处导出含 config 属性的类，是为了保证编译后生成 .json 文件
+export default class CustomTabBar {
+  config = {
+    component: true
+  }
+}
+</script>
+<style lang='less' scoped>
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  display: flex;
+  padding-top: 16rpx;
+  padding-bottom: env(safe-area-inset-bottom);
+  .border {
+    background-color: rgba(0, 0, 0, 0.33);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 1px;
+    transform: scaleY(0.5);
+  }
+  .item {
+    position: relative;
+    flex: 1;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    .badge {
+      position: absolute;
+      top: 0;
+      right: 50%;
+      padding: 4rpx 12rpx;
+      border-radius: 28rpx;
+      font-size: 20rpx;
+      background-color: red;
+      color: #fff;
+      z-index: 3;
+      transform: translateX(100%);
+    }
+    cover-image {
+      width: 27px;
+      height: 27px;
+      margin-bottom: 12rpx;
+    }
+    cover-view {
+      font-size: 10px;
+    }
+  }
+}
+</style>
