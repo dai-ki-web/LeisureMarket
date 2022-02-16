@@ -1,170 +1,81 @@
 <!-- index.wpy -->
 <template>
-  <cover-view class="tab-bar">
-    <cover-view class="border"></cover-view>
-    <cover-view
-      wx:for="{{list}}"
-      wx:key="index"
-      class="item"
-      data-path="{{item.pagePath}}"
-      data-index="{{index}}"
-      @tap="switchTab($event)"
+  <view style="position:relative">
+    <van-tabbar
+      :active="active"
+      bind:change="Change($event)"
     >
-      <!--  -->
-      <cover-view
-        wx:if="{{badge[index]}}"
-        class="badge"
-      >{{badge[index]}}</cover-view>
-      <!-- <cover-image src="{{selected === index ? item.selectedIconPath : item.iconPath}}" /> -->
-      <cover-view style="color: {{selected === index ? selectedColor : color}}">{{item.text}}</cover-view>
-    </cover-view>
-  </cover-view>
+      <van-tabbar-item
+        name="home"
+        icon="bag"
+      >首页</van-tabbar-item>
+      <van-tabbar-item
+        name="cart"
+        icon="cart"
+      >购物车</van-tabbar-item>
+      <van-tabbar-item
+        name="pub"
+        icon="add"
+      >
+        发布</van-tabbar-item>
+      <van-tabbar-item
+        name="news"
+        icon="chat"
+      >消息</van-tabbar-item>
+      <van-tabbar-item
+        name="user"
+        icon="manager"
+      >我的</van-tabbar-item>
+    </van-tabbar>
+
+    <van-popup
+      show="{{ show }}"
+      bind:close="onClose"
+    >内容</van-popup>
+  </view>
 </template>
 
 <script>
 import wepy from '@wepy/core'
 wepy.component({
   data: {
-    badge: {},
-    selected: 0,
+    active: 'home',
     color: '#7A7E83',
     selectedColor: '#6280f5',
-    list: [
-      {
-        // selectedIconPath: '../images/tab_application_pre.png',
-        // iconPath: '../images/tab_application.png',
+    tabbar: {
+      home: {
         pagePath: 'pages/index',
         text: '首页'
       },
-      {
-        // selectedIconPath: '../images/tab_news_pre.png',
-        // iconPath: '../images/tab_news.png',
+      cart: {
         pagePath: 'pages/cart',
         text: '购物车'
       },
-      {
-        // selectedIconPath: '../images/tab_message_pre.png',
-        // iconPath: '../images/tab_message.png',
-        pagePath: 'pages/init',
-        text: '发布'
+      pub: {
+        pagePath: 'pages/cart',
+        text: '购物车'
       },
-      {
-        // selectedIconPath: '../images/tab_mine_pre.png',
-        // iconPath: '../images/tab_mine.png',
-        pagePath: 'pages/init',
-        text: '消息'
+      news: {
+        pagePath: 'pages/cart',
+        text: '购物车'
       },
-      {
-        // selectedIconPath: '../images/tab_mine_pre.png',
-        // iconPath: '../images/tab_mine.png',
-        pagePath: 'pages/init',
-        text: '我的'
+      user: {
+        pagePath: 'pages/cart',
+        text: '购物车'
       }
-    ]
+    }
   },
   attached() {},
   methods: {
-    switchTab(e) {
-      const data = e.currentTarget.dataset
-      const url = data.path.split('/')[1]
+    Change(e) {
+      const data = e.$wx.detail
+      this.active = data
+      const url = this.tabbar[data].pagePath.split('/')[1]
+      console.log(url)
       wx.switchTab({ url })
-      // this.setData({
-      //   selected: data.index
-      // })
-    },
-    setTabBarBadge(options) {
-      if (!options) return
-      const { index, text } = options
-      const badge = this.data.badge || {}
-      badge[index] = text
-      this.setData({
-        badge
-      })
-    },
-    removeTabBarBadge(options) {
-      if (!options || options.index === undefined) return
-      const { index } = options
-      const badge = this.data.badge || {}
-      badge[index] = null
-      this.setData({
-        badge
-      })
     }
   }
 })
-// 此处使用的是原生创建组件的方式，保证编译后符合官方推荐的格式。
-// Component({
-//   data: {
-//     badge: {},
-//     selected: 0,
-//     color: '#7A7E83',
-//     selectedColor: '#6280f5',
-//     list: [
-//       {
-//         // selectedIconPath: '../images/tab_application_pre.png',
-//         // iconPath: '../images/tab_application.png',
-//         pagePath: 'pages/index',
-//         text: '首页'
-//       },
-//       {
-//         // selectedIconPath: '../images/tab_news_pre.png',
-//         // iconPath: '../images/tab_news.png',
-//         pagePath: 'pages/cart',
-//         text: '购物车'
-//       },
-//       {
-//         // selectedIconPath: '../images/tab_message_pre.png',
-//         // iconPath: '../images/tab_message.png',
-//         pagePath: 'pages/init',
-//         text: '发布'
-//       },
-//       {
-//         // selectedIconPath: '../images/tab_mine_pre.png',
-//         // iconPath: '../images/tab_mine.png',
-//         pagePath: 'pages/init',
-//         text: '消息'
-//       },
-//       {
-//         // selectedIconPath: '../images/tab_mine_pre.png',
-//         // iconPath: '../images/tab_mine.png',
-//         pagePath: 'pages/init',
-//         text: '我的'
-//       }
-//     ]
-//   },
-//   attached() {
-//     console.log('1')
-//   },
-//   methods: {
-//     switchTab(e) {
-//       console.log('switch')
-//       const data = e.currentTarget.dataset
-//       const url = data.path
-//       wx.switchTab({ url })
-//       this.setData({
-//         selected: data.index
-//       })
-//     },
-//     setTabBarBadge(options) {
-//       if (!options) return
-//       const { index, text } = options
-//       const badge = this.data.badge || {}
-//       badge[index] = text
-//       this.setData({
-//         badge
-//       })
-//     },
-//     removeTabBarBadge(options) {
-//       if (!options || options.index === undefined) return
-//       const { index } = options
-//       const badge = this.data.badge || {}
-//       badge[index] = null
-//       this.setData({
-//         badge
-//       })
-//     }
-//   }
-// })
 
 // NOTE: 此处导出含 config 属性的类，是为了保证编译后生成 .json 文件
 export default class CustomTabBar {
@@ -173,6 +84,16 @@ export default class CustomTabBar {
   }
 }
 </script>
+<config>
+{
+  usingComponents:{
+    "van-tabbar": "../components/vant/tabbar/index",
+    "van-tabbar-item": "../components/vant/tabbar-item/index",
+    "van-popup": "../components/vant/popup/index"
+  }
+}
+</config>
+
 <style lang='less' scoped>
 .tab-bar {
   position: fixed;
