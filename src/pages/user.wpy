@@ -1,0 +1,66 @@
+<template>
+  <view>
+    {{test}}
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+
+wepy.page({
+  data: { test: 'user' },
+  methods: {},
+  onLoad() {
+    console.log('loading....')
+    wx.login({
+      success: res => {
+        wx.cloud.callFunction({
+          name: 'getOpenid',
+          complete: res => {
+            let { OPENID: openid } = res.result
+            console.log(openid)
+            const db = wx.cloud.database()
+            const _ = db.command
+            const users_sheet = db.collection('users')
+            users_sheet
+              .where({
+                openid: _.eq(openid)
+              })
+              .get({
+                success: res => {
+                  // openid已存在——
+                  if (res.data.length > 0) {
+                    console.log('res')
+                    // 检查时间戳
+                  } else {
+                    wx.navigateTo({ url: '/pages/login' })
+                    // 不存在，录入信息
+                    // users_sheet.add({
+                    //   openid,
+                    //   timeStamp: Date.now()
+                    // })
+                  }
+                }
+              })
+          }
+        })
+      }
+    })
+  },
+  onShow() {
+    if (this.$wx && typeof this.$wx.getTabBar === 'function') {
+      const tabBar = this.$wx.getTabBar()
+      tabBar.setData({
+        active: 'user'
+      })
+    }
+  }
+})
+</script>
+<config>
+{
+  usingComponents:{
+    
+  }
+}
+</config>

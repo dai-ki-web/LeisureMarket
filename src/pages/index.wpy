@@ -20,6 +20,12 @@
       ></Card>
     </view>
 
+    <view
+      type="primary"
+      block
+      @tap="turnTo"
+    >出物</view>
+
   </view>
 </template>
 
@@ -57,7 +63,8 @@ wepy.page({
   created() {},
   methods: {
     turnTo() {
-      this.$navigate({ url: 'publish/pub' })
+      console.log(this);
+      // this.$navigate({ url: 'publish/pub' })
     }
   },
   onShow() {

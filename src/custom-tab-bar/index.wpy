@@ -3,7 +3,10 @@
   <view style="position:relative">
     <van-tabbar
       :active="active"
-      bind:change="Change($event)"
+      @change="Change($event)"
+      :border="false"
+      :inactive-color="color"
+      :active-color="selectedColor"
     >
       <van-tabbar-item
         name="home"
@@ -15,8 +18,21 @@
       >购物车</van-tabbar-item>
       <van-tabbar-item
         name="pub"
-        icon="add"
+        
       >
+      <!-- icon="add" -->
+        <image
+          slot="icon"
+          src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d"
+          mode="aspectFit"
+          style="width: 30px; height: 18px;position:relative;bottom:30%;transform:scale(2)"
+        />
+        <image
+          slot="icon-active"
+          src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d"
+          mode="aspectFit"
+          style="width: 30px; height: 18px;"
+        />
         发布</van-tabbar-item>
       <van-tabbar-item
         name="news"
@@ -29,9 +45,28 @@
     </van-tabbar>
 
     <van-popup
-      show="{{ show }}"
-      bind:close="onClose"
-    >内容</van-popup>
+      :show="show"
+      @close="onClose"
+      position="bottom"
+      custom-style="height:100px;width:40%;;margin:auto auto 30% 30%;border-radius:5px;background-color:transparent"
+      z-index="0"
+      duration="0"
+    >
+      <van-transition
+        :show="show"
+        name="slide-up"
+        :duration="{ enter: 300, leave: 100 }"
+      >
+        <view>
+          <van-button
+            type="primary"
+            block
+            @tap="toPub"
+          >出物</van-button>
+        </view>
+      </van-transition>
+    </van-popup>
+
   </view>
 </template>
 
@@ -39,8 +74,9 @@
 import wepy from '@wepy/core'
 wepy.component({
   data: {
+    show: false,
     active: 'home',
-    color: '#7A7E83',
+    color: '#7A7783',
     selectedColor: '#6280f5',
     tabbar: {
       home: {
@@ -52,16 +88,16 @@ wepy.component({
         text: '购物车'
       },
       pub: {
-        pagePath: 'pages/cart',
-        text: '购物车'
+        pagePath: '',
+        text: '发布'
       },
       news: {
         pagePath: 'pages/cart',
         text: '购物车'
       },
       user: {
-        pagePath: 'pages/cart',
-        text: '购物车'
+        pagePath: 'pages/user',
+        text: '我的'
       }
     }
   },
@@ -69,10 +105,28 @@ wepy.component({
   methods: {
     Change(e) {
       const data = e.$wx.detail
-      this.active = data
-      const url = this.tabbar[data].pagePath.split('/')[1]
-      console.log(url)
-      wx.switchTab({ url })
+      if (data !== 'pub') {
+        this.onClose()
+        this.active = data
+        const url = this.tabbar[data].pagePath.split('/')[1]
+        wx.switchTab({ url })
+      } else {
+        this.show = !this.show
+      }
+    },
+    async onClose() {
+      this.show = false
+    },
+    toPub() {
+      wx.navigateTo({
+        url: 'publish/pub',
+        success: res => {
+          this.show = false
+        },
+        fail: err => {
+          console.log(err)
+        }
+      })
     }
   }
 })
@@ -89,7 +143,9 @@ export default class CustomTabBar {
   usingComponents:{
     "van-tabbar": "../components/vant/tabbar/index",
     "van-tabbar-item": "../components/vant/tabbar-item/index",
-    "van-popup": "../components/vant/popup/index"
+    "van-popup": "../components/vant/popup/index",
+    "van-button": "../components/vant/button/index",
+    "van-transition": "../components/vant/transition/index"
   }
 }
 </config>

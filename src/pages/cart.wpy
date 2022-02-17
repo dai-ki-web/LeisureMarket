@@ -73,7 +73,7 @@ wepy.page({
     if (this.$wx && typeof this.$wx.getTabBar === 'function') {
       const tabBar = this.$wx.getTabBar()
       tabBar.setData({
-        active: 'search'
+        active: 'cart'
       })
     }
   }

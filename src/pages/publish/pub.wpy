@@ -10,11 +10,10 @@
       />
       <van-cell>
         <van-uploader
-          :file-list=" imgList "
+          :file-list=" form.imgList "
           @after-read="afterRead"
-          @oversize="oversize"
+          @delete="deleteImg"
           multiple
-          max-size="1048576"
           max-count="9"
         />
       </van-cell>
@@ -50,6 +49,7 @@
     <van-button
       type="primary"
       custom-style="width:70%;display: flex;align-items: center;margin:50px"
+      @tap="handleSubmit"
     >发布</van-button>
 
     <!-- 弹出层 -->
@@ -68,13 +68,14 @@
         value-key="label"
       />
     </van-popup>
+
+    <van-toast id="van-toast" />
   </view>
 </template>
 
 <script>
 import wepy from '@wepy/core'
 import Toast from '../../components/vant/toast/toast'
-
 const classes = {
   图书: ['教辅', '小说', '社科'],
   美妆: ['粉底', '眼影', '腮红']
@@ -82,14 +83,15 @@ const classes = {
 wepy.component({
   props: {},
   data: {
-    classes: [],
     value: '2121',
-    imgList: [],
     testData: ['a', 'b', 'c'],
+
+    classes: [],
+    conditon: undefined,
+    ability: undefined,
     form: {
       introduction: '',
-      conditon: undefined,
-      ability: undefined
+      imgList: []
     },
     showPopup: false,
     classOptions: [
@@ -143,29 +145,71 @@ wepy.component({
     }
   },
   methods: {
-    afterRead($event) {
-      let { file } = $event.$wx.detail
-      console.log(file)
+    afterRead(e) {
+      let { file } = e.$wx.detail
+      let filelist = file.filter(item => {
+        return item.size <= 1048576
+      })
+      filelist.forEach(item =>
+        this.form.imgList.push({
+          url: item.url
+        })
+      )
+      if (filelist.length < file.length) {
+        Toast('大于1M的图片无法上传')
+      }
+
+      // const uploadTasks = filelist.map((item, index) =>
+      //   this.uploadFilePromise(
+      //     `my-photo${index}.${item.url.split('.')[1]}`,
+      //     item
+      //   )
+      // )
+      // Promise.all(uploadTasks)
+      //   .then(data => {
+      //     // Toast.success('上传成功')
+      //     data.forEach(item => this.imgList.push({ url: item.fileID }))
+      //   })
+      //   .catch(err => {
+      //     // Toast.success('上传失败',err)
+      //     console.log(err)
+      //   })
     },
-    oversize() {
-      Toast('图片大小不能超过1M！')
+    uploadFilePromise(fileName, chooseResult) {
+      return wx.cloud.uploadFile({
+        cloudPath: fileName,
+        filePath: chooseResult.url
+      })
     },
-    onClassChange($event) {
-      const { picker, value, index } = $event.$wx.detail
+    deleteImg(e) {
+      let index = e.$wx.detail.index
+      this.form.imgList.splice(index, 1)
+    },
+    onClassChange(e) {
+      const { picker, value, index } = e.$wx.detail
       console.log({ picker, value, index })
       picker.setColumnValues(1, classes[value[0]])
     },
     onClose() {
       this.showPopup = false
     },
-    onChange($event) {
-      this.form.introduction = $event.$wx.detail
+    onChange(e) {
+      this.form.introduction = e.$wx.detail
     },
-    onConfirm($event) {
-      const { value, index } = $event.$wx.detail
+    onConfirm(e) {
+      const { value, index } = e.$wx.detail
       this.classes = value
       this.form.class = index
       this.showPopup = false
+    },
+    handleSubmit() {
+      let goods = wx.cloud.database().collection('goods-shelf')
+      goods.add({
+        data: {
+          ...this.form,
+          classes
+        }
+      })
     }
   }
 })
@@ -180,7 +224,7 @@ wepy.component({
     'van-uploader':'../../components/vant/uploader',
     'van-picker':'../../components/vant/picker',
     'van-popup':'../../components/vant/popup',
-
+    "van-toast": "../../components/vant/toast"
   }
 }
 </config>

@@ -47,5 +47,7 @@
   "appid": "wx1c8e98e985d3373f",
   "projectname": "xian",
   "miniprogramRoot": "weapp/",
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate",
+  "cloudfunctionRoot": "cloudfunctions/",
   "condition": {}
 }
