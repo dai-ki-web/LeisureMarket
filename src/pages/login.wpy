@@ -13,13 +13,25 @@ import wepy from '@wepy/core'
 import dbMixin from '@/mixins/handleDatabase.js'
 wepy.page({
   mixins: [dbMixin],
-  data: {},
+  data: {
+    openid: ''
+  },
   methods: {
     onLogin(e) {
       if (e.$wx.detail.errMsg.match(/ok/)) {
-        console.log(e.$wx.detail.userInfo)
-        const { avatarUrl, nickName } = e.$wx.detail.userInfo
-        this.db_Add('users', { avatarUrl, nickName, timeStamp: Date.now() })
+        // 点击允许
+        // 查询数据库中的用户信息——有就更新，没有就添加
+
+        let getItem = this.db_Search_Openid('users', this.openid)
+        getItem.then(res => {
+          if (res.data.length) {
+            console.log('用户已存在，直接登录')
+          } else {
+            // 获取头像、用户名信息
+            const { avatarUrl, nickName } = e.$wx.detail.userInfo
+            this.db_Add('users', { avatarUrl, nickName })
+          }
+        })
         wx.setStorage({
           key: 'loginStatus',
           data: 1
@@ -27,8 +39,14 @@ wepy.page({
         wx.switchTab({
           url: '/pages/user'
         })
+      } else {
+        // 点击拒绝，弹出toast
+        wx.showToast('授权失败')
       }
     }
+  },
+  onLoad(option) {
+    this.openid = option.openid
   }
 })
 </script>
