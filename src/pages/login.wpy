@@ -10,13 +10,23 @@
 
 <script>
 import wepy from '@wepy/core'
+import dbMixin from '@/mixins/handleDatabase.js'
 wepy.page({
+  mixins: [dbMixin],
   data: {},
   methods: {
     onLogin(e) {
       if (e.$wx.detail.errMsg.match(/ok/)) {
         console.log(e.$wx.detail.userInfo)
-        userInfo = e.$wx.detail.userinfo
+        const { avatarUrl, nickName } = e.$wx.detail.userInfo
+        this.db_Add('users', { avatarUrl, nickName, timeStamp: Date.now() })
+        wx.setStorage({
+          key: 'loginStatus',
+          data: 1
+        })
+        wx.switchTab({
+          url: '/pages/user'
+        })
       }
     }
   }

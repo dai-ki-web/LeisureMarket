@@ -1,6 +1,7 @@
 <template>
   <view>
-    {{test}}
+    {{userInfo.avatarUrl}}
+    {{userInfo.nickName}}
   </view>
 </template>
 
@@ -8,7 +9,12 @@
 import wepy from '@wepy/core'
 
 wepy.page({
-  data: { test: 'user' },
+  data: {
+    userInfo: {
+      avatarUrl: '111',
+      nickName: '222'
+    }
+  },
   methods: {},
   onLoad() {
     console.log('loading....')
@@ -18,27 +24,32 @@ wepy.page({
           name: 'getOpenid',
           complete: res => {
             let { OPENID: openid } = res.result
-            console.log(openid)
             const db = wx.cloud.database()
             const _ = db.command
-            const users_sheet = db.collection('users')
-            users_sheet
+            const userSheet = db.collection('users')
+            userSheet
               .where({
-                openid: _.eq(openid)
+                _openid: _.eq(openid)
               })
               .get({
                 success: res => {
-                  // openid已存在——
                   if (res.data.length > 0) {
-                    console.log('res')
+                    let dataItem = res.data[0]
+                    // openid已存在
                     // 检查时间戳
+                    // 登录有效期为30天
+                    const timeNow = Date.now()
+                    if (timeNow - 2592000000 <= dataItem.timeStamp) {
+                      // 有效登录
+                      let { avatarUrl, nickName } = dataItem
+                      this.userInfo = { avatarUrl, nickName }
+                    } else {
+                      // 登陆状态已过期
+                      wx.showToast('登陆状态已过期')
+                      wx.navigateTo({ url: '/pages/login' })
+                    }
                   } else {
                     wx.navigateTo({ url: '/pages/login' })
-                    // 不存在，录入信息
-                    // users_sheet.add({
-                    //   openid,
-                    //   timeStamp: Date.now()
-                    // })
                   }
                 }
               })
@@ -48,6 +59,16 @@ wepy.page({
     })
   },
   onShow() {
+    // wx.getStorage({
+    //   key: 'loginStatus',
+    //   success: res => {
+    //     if (res.data) {
+    //       console.log('登陆有效')
+    //     } else {
+    //       console.log('登录失效')
+    //     }
+    //   }
+    // })
     if (this.$wx && typeof this.$wx.getTabBar === 'function') {
       const tabBar = this.$wx.getTabBar()
       tabBar.setData({
