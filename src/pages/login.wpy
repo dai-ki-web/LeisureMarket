@@ -5,48 +5,52 @@
       open-type="getUserInfo"
       bindgetuserinfo="onLogin"
     >一键登录</van-button>
+    {{openid}}
   </view>
 </template>
 
 <script>
 import wepy from '@wepy/core'
-import dbMixin from '@/mixins/handleDatabase.js'
+import globalData from '@/globalData.js'
+import { dbAdd } from '@/Database.js'
+
 wepy.page({
-  mixins: [dbMixin],
-  data: {
-    openid: ''
-  },
+  data: { openid: null },
   methods: {
     onLogin(e) {
       if (e.$wx.detail.errMsg.match(/ok/)) {
         // 点击允许
-        // 查询数据库中的用户信息——有就更新，没有就添加
-
-        let getItem = this.db_Search_Openid('users', this.openid)
-        getItem.then(res => {
-          if (res.data.length) {
-            console.log('用户已存在，直接登录')
-          } else {
-            // 获取头像、用户名信息
-            const { avatarUrl, nickName } = e.$wx.detail.userInfo
-            this.db_Add('users', { avatarUrl, nickName })
+        // 添加新用户的数据，并将数据缓存到本地
+        // 获取头像、用户名信息
+        const { avatarUrl, nickName } = e.$wx.detail.userInfo
+        const _openid = this.$wx.data.openid
+        dbAdd('users', { avatarUrl, nickName }).then(res => {
+          let _id = res._id
+          globalData.userInfo = {
+            _id,
+            avatarUrl,
+            nickName,
+            _openid
           }
-        })
-        wx.setStorage({
-          key: 'loginStatus',
-          data: 1
-        })
-        wx.switchTab({
-          url: '/pages/user'
+          wx.setStorage({
+            key: 'userInfo',
+            data: globalData.userInfo
+          })
+          // 跳转到用户页
+          wx.switchTab({
+            url: '/pages/user'
+          })
         })
       } else {
         // 点击拒绝，弹出toast
         wx.showToast('授权失败')
       }
+    },
+    onLoad(option) {
+      this.setData({
+        openid: option.OPENID
+      })
     }
-  },
-  onLoad(option) {
-    this.openid = option.openid
   }
 })
 </script>

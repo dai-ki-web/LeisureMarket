@@ -19,12 +19,9 @@
         :userIcon="item.userIcon"
       ></Card>
     </view>
-
-    <view
-      type="primary"
-      block
-      @tap="turnTo"
-    >出物</view>
+    <view>
+      <!-- {{this.$app.globalData.userInfo}} -->
+    </view>
 
   </view>
 </template>
@@ -61,12 +58,7 @@ wepy.page({
     ]
   },
   created() {},
-  methods: {
-    turnTo() {
-      console.log(this);
-      // this.$navigate({ url: 'publish/pub' })
-    }
-  },
+  methods: {},
   onShow() {
     if (this.$wx && typeof this.$wx.getTabBar === 'function') {
       const tabBar = this.$wx.getTabBar()
@@ -74,6 +66,7 @@ wepy.page({
         active: 'home'
       })
     }
+    // console.log(this.$app.$options.globalData.userInfo)
   }
 })
 </script>

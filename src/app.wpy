@@ -13,6 +13,8 @@
 import wepy from '@wepy/core'
 import eventHub from './common/eventHub'
 import vuex from '@wepy/x'
+import globalData from '@/globalData.js'
+
 wepy.use(vuex)
 
 wepy.app({
@@ -24,16 +26,16 @@ wepy.app({
       return dirty
     }
   },
-  globalData: {
-    userInfo: null
-  },
+  // globalData: {
+  //   userInfo: null
+  // },
 
   onLaunch() {
-    this.testAsync()
-    eventHub.$on('app-launch', (...args) => {
-      console.log('app-launch event emitted, the params are:')
-      console.log(args)
-    })
+    // this.testAsync()
+    // eventHub.$on('app-launch', (...args) => {
+    //   console.log('app-launch event emitted, the params are:')
+    //   console.log(args)
+    // })
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
@@ -42,6 +44,39 @@ wepy.app({
         env: 'develop-0guqmlrwce7ddc4b'
       })
     }
+    wx.getStorage({
+      key: 'userInfo',
+      success: res => {
+        let userInfo = res.data
+        console.log('登陆有效')
+        // 获取用户数据
+        wx.login({
+          success: res => {
+            wx.cloud.callFunction({
+              name: 'getOpenid',
+              complete: res => {
+                // let { OPENID } = res.result
+                globalData.userInfo = {
+                  ...userInfo
+                }
+                // wx.setStorage({
+                //   key: 'userInfo',
+                //   data: null
+                // })
+                console.log(globalData)
+              }
+            })
+          }
+        })
+      },
+      fail: () => {
+        console.log('未登录')
+        wx.setStorage({
+          key: 'userInfo',
+          data: null
+        })
+      }
+    })
   },
 
   methods: {

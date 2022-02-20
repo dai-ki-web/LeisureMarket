@@ -7,6 +7,8 @@
 
 <script>
 import wepy from '@wepy/core'
+import { dbSearchOpenid } from '@/Database.js'
+import globalData from '@/globalData.js'
 
 wepy.page({
   data: {
@@ -17,57 +19,50 @@ wepy.page({
   },
   methods: {},
   onShow() {
-    wx.getStorage({
-      key: 'loginStatus',
-      success: res => {
-        if (res.data) {
-          console.log('登陆有效')
-          // 获取用户数据
-          wx.login({
-            success: res => {
-              wx.cloud.callFunction({
-                name: 'getOpenid',
-                complete: res => {
-                  let { OPENID: openid } = res.result
-                  const db = wx.cloud.database()
-                  const _ = db.command
-                  const userSheet = db.collection('users')
-                  userSheet
-                    .where({
-                      _openid: _.eq(openid)
-                    })
-                    .get({
-                      success: res => {
-                        let dataItem = res.data[0]
-                        let { avatarUrl, nickName } = dataItem
-                        this.userInfo = { avatarUrl, nickName }
-                      }
-                    })
-                }
-              })
-            }
-          })
-        } else {
-          console.log('登录失效')
-          wx.login({
-            success: res => {
-              wx.cloud.callFunction({
-                name: 'getOpenid',
-                complete: res => {
-                  let { OPENID } = res.result
-                  // 跳转login页面
-                  wx.navigateTo({ url: `/pages/login?openid=${OPENID}` })
+    console.log(globalData.userInfo)
+    if (globalData.userInfo === null) {
+      // 对应的情况是新用户 | 旧用户本地缓存被清除
+      // 检查openid是否存在在数据库中
+      wx.login({
+        success: res => {
+          wx.cloud.callFunction({
+            name: 'getOpenid',
+            complete: res => {
+              let { OPENID } = res.result
+              dbSearchOpenid('users', OPENID).then(res => {
+                if (res.data.length) {
+                  // 如果存在,将数据库中的数据缓存到本地
+                  let userInfo = res.data[0]
+                  globalData.userInfo = {
+                    ...userInfo
+                  }
+
+                  // 在视图上渲染
+                  const { avatarUrl, nickName } = globalData.userInfo
+                  this.userInfo.avatarUrl = avatarUrl
+                  this.userInfo.nickName = nickName
+                  
+
+                  wx.setStorage({
+                    key: 'userInfo',
+                    data: globalData.userInfo
+                  })
+                } else {
+                  // 如果不存在——新用户，跳转登录
+                  console.log('新用户')
+                  wx.navigateTo({ url: `/pages/login?OPENID=${OPENID}` })
                 }
               })
             }
           })
         }
-      },
-      fail: err => {
-        console.log('未登录')
-        wx.navigateTo({ url: '/pages/login' })
-      }
-    })
+      })
+    } else {
+      // 本地缓存有用户信息，直接读取
+      const { avatarUrl, nickName } = globalData.userInfo
+      this.userInfo.avatarUrl = avatarUrl
+      this.userInfo.nickName = nickName
+    }
     if (this.$wx && typeof this.$wx.getTabBar === 'function') {
       const tabBar = this.$wx.getTabBar()
       tabBar.setData({
