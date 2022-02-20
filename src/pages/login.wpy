@@ -5,7 +5,6 @@
       open-type="getUserInfo"
       bindgetuserinfo="onLogin"
     >一键登录</van-button>
-    {{openid}}
   </view>
 </template>
 
@@ -46,6 +45,7 @@ wepy.page({
       }
     },
     onLoad(option) {
+      // this.openid=option.OPENID //无法响应
       this.setData({
         openid: option.OPENID
       })

@@ -4,7 +4,6 @@ const userInfo = () => {
   wx.getStorage({
     key: 'userInfo',
     success: res => {
-      console.log(res)
       info = res
     }
   })
