@@ -26,15 +26,14 @@ wepy.page({
         const _openid = this.$wx.data.openid
         dbAdd('users', { avatarUrl, nickName }).then(res => {
           let _id = res._id
-          globalData.userInfo = {
-            _id,
-            avatarUrl,
-            nickName,
-            _openid
-          }
           wx.setStorage({
             key: 'userInfo',
-            data: globalData.userInfo
+            data: {
+              _id,
+              avatarUrl,
+              nickName,
+              _openid
+            }
           })
           // 跳转到用户页
           wx.switchTab({

@@ -46,29 +46,6 @@ wepy.app({
     }
     wx.getStorage({
       key: 'userInfo',
-      success: res => {
-        let userInfo = res.data
-        console.log('登陆有效')
-        // 获取用户数据
-        wx.login({
-          success: res => {
-            wx.cloud.callFunction({
-              name: 'getOpenid',
-              complete: res => {
-                // let { OPENID } = res.result
-                globalData.userInfo = {
-                  ...userInfo
-                }
-                // wx.setStorage({
-                //   key: 'userInfo',
-                //   data: null
-                // })
-                console.log(globalData)
-              }
-            })
-          }
-        })
-      },
       fail: () => {
         console.log('未登录')
         wx.setStorage({

@@ -19,8 +19,7 @@ wepy.page({
   },
   methods: {},
   onShow() {
-    console.log(globalData.userInfo)
-    if (globalData.userInfo === null) {
+    if (globalData.userInfo() === undefined) {
       // 对应的情况是新用户 | 旧用户本地缓存被清除
       // 检查openid是否存在在数据库中
       wx.login({
@@ -32,20 +31,16 @@ wepy.page({
               dbSearchOpenid('users', OPENID).then(res => {
                 if (res.data.length) {
                   // 如果存在,将数据库中的数据缓存到本地
-                  let userInfo = res.data[0]
-                  globalData.userInfo = {
-                    ...userInfo
-                  }
+                  let info = res.data[0]
 
                   // 在视图上渲染
-                  const { avatarUrl, nickName } = globalData.userInfo
+                  const { avatarUrl, nickName } = info
                   this.userInfo.avatarUrl = avatarUrl
                   this.userInfo.nickName = nickName
-                  
 
                   wx.setStorage({
                     key: 'userInfo',
-                    data: globalData.userInfo
+                    data: info
                   })
                 } else {
                   // 如果不存在——新用户，跳转登录
