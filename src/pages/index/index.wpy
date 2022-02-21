@@ -74,8 +74,8 @@ wepy.page({
 <config>
 {
   usingComponents:{
-    'Card':'../components/Card',
-    'van-search':'../components/vant/search',
+    'Card':'~@/components/Card/index',
+    'van-search':'~@/components/vant/search',
   }
 }
 </config>

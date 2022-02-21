@@ -14,31 +14,31 @@
       "list": [
         {
           "name": "pages/index",
-          "pathName": "pages/index",
+          "pathName": "pages/index/index",
           "query": "",
           "scene": null
         },
         {
           "name": "pages/cart",
-          "pathName": "pages/cart",
+          "pathName": "pages/cart/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "pages/publish/pub",
-          "pathName": "pages/publish/pub",
+          "name": "pages/goods/pub",
+          "pathName": "pages/goods/pub/index",
           "query": "",
           "scene": null
         },
         {
           "name": "pages/login",
-          "pathName": "pages/login",
+          "pathName": "pages/login/index",
           "query": "",
           "scene": null
         },
         {
           "name": "pages/user",
-          "pathName": "pages/user",
+          "pathName": "pages/user/index",
           "query": "",
           "scene": null
         }

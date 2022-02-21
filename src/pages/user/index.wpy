@@ -47,7 +47,7 @@ wepy.page({
                 } else {
                   // 如果不存在——新用户，跳转登录
                   console.log('新用户')
-                  wx.navigateTo({ url: `/pages/login?OPENID=${OPENID}` })
+                  wx.navigateTo({ url: `/pages/login/index?OPENID=${OPENID}` })
                 }
               })
             }

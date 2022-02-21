@@ -84,7 +84,7 @@
 
 <script>
 import wepy from '@wepy/core'
-import Toast from '../../components/vant/toast/toast'
+import Toast from '@/components/vant/toast/toast'
 import globalData from '@/globalData.js'
 import { randProductId } from '@/utils.js'
 
@@ -233,14 +233,14 @@ wepy.component({
 <config>
 {
   usingComponents:{
-    'van-field':'../../components/vant/field',
-    'van-button':'../../components/vant/button',
-    'van-cell-group':'../../components/vant/cell-group',
-    'van-cell':'../../components/vant/cell',
-    'van-uploader':'../../components/vant/uploader',
-    'van-picker':'../../components/vant/picker',
-    'van-popup':'../../components/vant/popup',
-    "van-toast": "../../components/vant/toast"
+    'van-field':'~@/components/vant/field',
+    'van-button':'~@/components/vant/button',
+    'van-cell-group':'~@/components/vant/cell-group',
+    'van-cell':'~@/components/vant/cell',
+    'van-uploader':'~@/components/vant/uploader',
+    'van-picker':'~@/components/vant/picker',
+    'van-popup':'~@/components/vant/popup',
+    // "van-toast": '~@/components/vant/toast'
   }
 }
 </config>

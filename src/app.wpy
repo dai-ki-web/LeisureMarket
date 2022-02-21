@@ -76,13 +76,13 @@ wepy.app({
 {
     cloud:true,
     pages: [
-      'pages/index',
+      'pages/index/index',
       'pages/init',
-      'pages/publish/pub',
-      'pages/cart',
-      'pages/user',
-      'pages/login',
-      'pages/publish/detail',
+      'pages/goods/pub/index',
+      'pages/cart/index',
+      'pages/user/index',
+      'pages/login/index',
+      'pages/goods/detail/index',
 
       
     ],
@@ -95,10 +95,10 @@ wepy.app({
     tabBar:{
       custom: true,
       list: [{
-      pagePath: "pages/index",
+      pagePath: "pages/index/index",
       text: "首页"
     }, {
-      pagePath: "pages/cart",
+      pagePath: "pages/cart/index",
       text: "购物车"
     }, {
       pagePath: "pages/init",
@@ -107,7 +107,7 @@ wepy.app({
       pagePath: "pages/init",
       text: "消息"
     }, {
-      pagePath: "pages/user",
+      pagePath: "pages/user/index",
       text: "我的"
     }]
     }

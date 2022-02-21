@@ -83,12 +83,12 @@ wepy.page({
 <config>
 {
   usingComponents:{
-    'van-card':'../components/vant/card',
-    'van-stepper':'../components/vant/stepper',
-    'van-submit-bar':'../components/vant/submit-bar',
-    'van-checkbox-group':'../components/vant/checkbox-group',
-    'van-checkbox':'../components/vant/checkbox',
-    'van-radio':'../components/vant/radio',
+    'van-card':'~@/components/vant/card',
+    'van-stepper':'~@/components/vant/stepper',
+    'van-submit-bar':'~@/components/vant/submit-bar',
+    'van-checkbox-group':'~@/components/vant/checkbox-group',
+    'van-checkbox':'~@/components/vant/checkbox',
+    'van-radio':'~@/components/vant/radio',
   }
 }
 </config>

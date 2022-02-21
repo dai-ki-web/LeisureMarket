@@ -16,11 +16,8 @@
         name="cart"
         icon="cart"
       >购物车</van-tabbar-item>
-      <van-tabbar-item
-        name="pub"
-        
-      >
-      <!-- icon="add" -->
+      <van-tabbar-item name="pub">
+        <!-- icon="add" -->
         <image
           slot="icon"
           src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d"
@@ -109,7 +106,8 @@ wepy.component({
         this.onClose()
         this.active = data
         const url = this.tabbar[data].pagePath.split('/')[1]
-        wx.switchTab({ url })
+        console.log(`/pages/${url}/index`)
+        wx.switchTab({ url: `/pages/${url}/index` })
       } else {
         this.show = !this.show
       }
@@ -119,7 +117,7 @@ wepy.component({
     },
     toPub() {
       wx.navigateTo({
-        url: 'publish/pub',
+        url: '/pages/goods/pub/index',
         success: res => {
           this.show = false
         },
@@ -141,11 +139,11 @@ export default class CustomTabBar {
 <config>
 {
   usingComponents:{
-    "van-tabbar": "../components/vant/tabbar/index",
-    "van-tabbar-item": "../components/vant/tabbar-item/index",
-    "van-popup": "../components/vant/popup/index",
-    "van-button": "../components/vant/button/index",
-    "van-transition": "../components/vant/transition/index"
+    "van-tabbar": "~@/components/vant/tabbar/index",
+    "van-tabbar-item": "~@/components/vant/tabbar-item/index",
+    "van-popup": "~@/components/vant/popup/index",
+    "van-button": "~@/components/vant/button/index",
+    "van-transition": "~@/components/vant/transition/index"
   }
 }
 </config>

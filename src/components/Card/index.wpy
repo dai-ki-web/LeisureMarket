@@ -54,7 +54,7 @@ wepy.component({
 <config>
 {
   usingComponents:{
-    'van-card':"./vant/card"
+    'van-card':"~@/components/vant/card"
   }
 }
 </config>
