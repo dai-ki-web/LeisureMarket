@@ -5,15 +5,16 @@
       <van-field
         type="textarea"
         :autosize="{minHeight:100}"
-        :value="form.introduction"
+        @change="fieldChange('introduction',$event)"
         placeholder="简单介绍一下..."
         :border="true"
-      />
+      >
+      </van-field>
 
       <!-- 上传图片 -->
       <van-cell>
         <van-uploader
-          :file-list=" form.imgList "
+          :file-list=" imgList "
           @after-read="afterRead"
           @delete="deleteImg"
           multiple
@@ -47,8 +48,8 @@
       <van-cell title="价格">
         <van-field
           label="￥"
-          type="number "
-          :value="form.price"
+          type="number"
+          @change="fieldChange('price',$event)"
           :border="true"
           input-align="right"
         />
@@ -84,6 +85,9 @@
 <script>
 import wepy from '@wepy/core'
 import Toast from '../../components/vant/toast/toast'
+import globalData from '@/globalData.js'
+import { randProductId } from '@/utils.js'
+
 import {
   CLASSES,
   CONDITON_OPTIONS,
@@ -96,12 +100,14 @@ wepy.component({
   props: {},
   data: {
     itemName: '',
+    imgList: [],
     form: {
       introduction: '',
       imgList: [],
       class: [],
-      condition: null,
-      ability: null
+      condition: 0,
+      ability: 0,
+      price: 0
     },
     showPopup: false,
     classOptions: [
@@ -147,29 +153,13 @@ wepy.component({
         return item.size <= 1048576
       })
       filelist.forEach(item =>
-        this.form.imgList.push({
+        this.imgList.push({
           url: item.url
         })
       )
       if (filelist.length < file.length) {
         Toast('大于1M的图片无法上传')
       }
-
-      // const uploadTasks = filelist.map((item, index) =>
-      //   this.uploadFilePromise(
-      //     `my-photo${index}.${item.url.split('.')[1]}`,
-      //     item
-      //   )
-      // )
-      // Promise.all(uploadTasks)
-      //   .then(data => {
-      //     // Toast.success('上传成功')
-      //     data.forEach(item => this.imgList.push({ url: item.fileID }))
-      //   })
-      //   .catch(err => {
-      //     // Toast.success('上传失败',err)
-      //     console.log(err)
-      //   })
     },
     uploadFilePromise(fileName, chooseResult) {
       return wx.cloud.uploadFile({
@@ -179,7 +169,7 @@ wepy.component({
     },
     deleteImg(e) {
       let index = e.$wx.detail.index
-      this.form.imgList.splice(index, 1)
+      this.imgList.splice(index, 1)
     },
     handlePopupOptions(mode) {
       this.showPopup = true
@@ -201,13 +191,41 @@ wepy.component({
       console.log(this.itemName)
       this.showPopup = false
     },
-    handleSubmit() {
+    async handleSubmit() {
       let goods = wx.cloud.database().collection('goods-shelf')
-      goods.add({
-        data: {
-          ...this.form
-        }
-      })
+      const { avatarUrl, nickName, _openid } = await globalData.userInfo()
+      const timeStamp = Date.now()
+
+      // 上传图片
+      // 根据openid和时间戳生成物品id
+      const productId = randProductId(_openid, timeStamp)
+      let uploadTasks = this.imgList.map((item, index) =>
+        this.uploadFilePromise(
+          `${productId}-photo${index}.${item.url.split('.')[1]}`,
+          item
+        )
+      )
+      Promise.all(uploadTasks)
+        .then(data => {
+          // Toast.success('上传成功')
+          data.forEach(item => this.form.imgList.push({ url: item.fileID }))
+          goods.add({
+            data: {
+              ...this.form,
+              avatarUrl,
+              nickName,
+              timeStamp,
+              productId
+            }
+          })
+        })
+        .catch(err => {
+          // Toast.success('上传失败',err)
+          console.log(err)
+        })
+    },
+    fieldChange(value, e) {
+      this.form[value] = e.$wx.detail
     }
   }
 })

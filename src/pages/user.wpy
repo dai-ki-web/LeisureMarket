@@ -18,8 +18,10 @@ wepy.page({
     }
   },
   methods: {},
-  onShow() {
-    if (globalData.userInfo() === undefined) {
+  async onShow() {
+    let userInfoSession = await globalData.userInfo()
+    if (userInfoSession === undefined) {
+      console.log('???')
       // 对应的情况是新用户 | 旧用户本地缓存被清除
       // 检查openid是否存在在数据库中
       wx.login({
@@ -54,7 +56,7 @@ wepy.page({
       })
     } else {
       // 本地缓存有用户信息，直接读取
-      const { avatarUrl, nickName } = globalData.userInfo
+      const { avatarUrl, nickName } = userInfoSession
       this.userInfo.avatarUrl = avatarUrl
       this.userInfo.nickName = nickName
     }

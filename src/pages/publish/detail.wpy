@@ -1,0 +1,15 @@
+<template>
+  <view>
+    详情
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+wepy.page({
+  data: {},
+  methods: {
+    methodName() {}
+  }
+})
+</script>

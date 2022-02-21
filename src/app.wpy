@@ -82,6 +82,7 @@ wepy.app({
       'pages/cart',
       'pages/user',
       'pages/login',
+      'pages/publish/detail',
 
       
     ],
