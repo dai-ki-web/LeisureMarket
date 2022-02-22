@@ -24,14 +24,14 @@
       <!-- 分类 -->
       <van-cell
         title="分类"
-        @click="handlePopupOptions('class')"
+        @tap="handlePopupOptions('class')"
       >
         {{classFormatter}}
       </van-cell>
       <!-- 成色 -->
       <van-cell
         title="成色"
-        @click="handlePopupOptions('condition')"
+        @tap="handlePopupOptions('condition')"
       >
         {{conditionFormatter}}
       </van-cell>
@@ -39,7 +39,7 @@
       <!-- 功能 -->
       <van-cell
         title="功能"
-        @click="handlePopupOptions('ability')"
+        @tap="handlePopupOptions('ability')"
       >
         {{abilityFormatter}}
       </van-cell>
@@ -52,6 +52,9 @@
           @change="fieldChange('price',$event)"
           :border="true"
           input-align="right"
+          :error-message="priceError"
+          error-message-align="right"
+          title-width="1em"
         />
       </van-cell>
     </van-cell-group>
@@ -59,6 +62,7 @@
       type="primary"
       custom-style="width:70%;display: flex;align-items: center;margin:50px"
       @tap="handleSubmit"
+      :disabled="pubDisable"
     >发布</van-button>
 
     <!-- 弹出层 -->
@@ -99,15 +103,17 @@ import {
 wepy.component({
   props: {},
   data: {
+    pubDisable: true,
+    priceError: '',
     itemName: '',
     imgList: [],
     form: {
       introduction: '',
       imgList: [],
       class: [],
-      condition: 0,
-      ability: 0,
-      price: 0
+      condition: null,
+      ability: null,
+      price: null
     },
     showPopup: false,
     classOptions: [
@@ -144,6 +150,20 @@ wepy.component({
     abilityFormatter() {
       const abilities = ABILITIES
       return abilities[this.form.ability]
+    },
+    formValid() {
+      if (!Number(this.form.price)) {
+        this.priceError = '*价格不能为0'
+      } else {
+        this.priceError = ''
+      }
+      let valid =
+        !!this.form.introduction &&
+        !!this.imgList.length &&
+        !!this.form.class.length &&
+        !!this.form.condition &&
+        !!this.form.ability & !this.priceError
+      this.pubDisable = !valid
     }
   },
   methods: {
@@ -191,41 +211,49 @@ wepy.component({
       console.log(this.itemName)
       this.showPopup = false
     },
-    async handleSubmit() {
-      let goods = wx.cloud.database().collection('goods-shelf')
-      const { avatarUrl, nickName, _openid } = await globalData.userInfo()
-      const timeStamp = Date.now()
 
-      // 上传图片
-      // 根据openid和时间戳生成物品id
-      const productId = randProductId(_openid, timeStamp)
-      let uploadTasks = this.imgList.map((item, index) =>
-        this.uploadFilePromise(
-          `${productId}-photo${index}.${item.url.split('.')[1]}`,
-          item
+    async handleSubmit() {
+      if (!this.pubDisable) {
+        let goods = wx.cloud.database().collection('goods-shelf')
+        const { avatarUrl, nickName, _openid } = await globalData.userInfo()
+        const timeStamp = Date.now()
+
+        // 上传图片
+        // 根据openid和时间戳生成物品id
+        const productId = randProductId(_openid, timeStamp)
+        let uploadTasks = this.imgList.map((item, index) =>
+          this.uploadFilePromise(
+            `${productId}-photo${index}.${item.url.split('.')[1]}`,
+            item
+          )
         )
-      )
-      Promise.all(uploadTasks)
-        .then(data => {
-          // Toast.success('上传成功')
-          data.forEach(item => this.form.imgList.push({ url: item.fileID }))
-          goods.add({
-            data: {
-              ...this.form,
-              avatarUrl,
-              nickName,
-              timeStamp,
-              productId
-            }
+        Promise.all(uploadTasks)
+          .then(data => {
+            // Toast.success('上传成功')
+            data.forEach(item => this.form.imgList.push({ url: item.fileID }))
+            goods.add({
+              data: {
+                ...this.form,
+                avatarUrl,
+                nickName,
+                timeStamp,
+                productId
+              },
+              success: res => {
+                wx.redirectTo({
+                  url: `/pages/goods/detail/index?dataId=${res._id}`
+                })
+              }
+            })
           })
-        })
-        .catch(err => {
-          // Toast.success('上传失败',err)
-          console.log(err)
-        })
+          .catch(err => {
+            // Toast.success('上传失败',err)
+            console.log(err)
+          })
+      }
     },
     fieldChange(value, e) {
-      this.form[value] = e.$wx.detail
+      this.form[value] = e.$wx.detail.trim()
     }
   }
 })
@@ -240,7 +268,7 @@ wepy.component({
     'van-uploader':'~@/components/vant/uploader',
     'van-picker':'~@/components/vant/picker',
     'van-popup':'~@/components/vant/popup',
-    // "van-toast": '~@/components/vant/toast'
+    "van-toast": '~@/components/vant/toast'
   }
 }
 </config>

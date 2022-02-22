@@ -6,10 +6,27 @@
 
 <script>
 import wepy from '@wepy/core'
+import { getGoodsData } from '@/Database.js'
+
 wepy.page({
-  data: {},
+  data: {
+    dataId: 'bf4a0bf26214af2110c2802c6157c674'
+  },
   methods: {
     methodName() {}
+  },
+  onLoad(option) {
+    // this.openid=option.OPENID //无法响应
+    // this.setData({
+    //   dataId: option.dataId
+    // })
+  },
+  onshow() {
+    console.log('1')
+    console.log(getGoodsData())
+    getGoodsData(this.dataId).then(res => {
+      console.log(res)
+    })
   }
 })
 </script>
