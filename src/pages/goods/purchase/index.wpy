@@ -1,0 +1,10 @@
+<template>
+  <view>
+    购买页
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+wepy.page({})
+</script>

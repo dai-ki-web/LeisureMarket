@@ -9,13 +9,12 @@
     />
     <view style="display:flex">
       <Card
-        v-for="item in items"
-        :image="item.image"
-        :key="item.id"
-        :title="item.title"
-        :describe="item.describe"
+        v-for="item in goods"
+        :image="item.imgList[0]"
+        :key="item._id"
+        :title="item.introduction"
         :price="item.price"
-        :userId="item.userId"
+        :userId="item._openid"
         :userIcon="item.userIcon"
       ></Card>
     </view>
@@ -28,34 +27,12 @@
 
 <script>
 import wepy from '@wepy/core'
+import { getAllGoods } from '@/api.js'
+
 wepy.page({
   data: {
     value: '',
-    items: [
-      {
-        id: 9988,
-        image:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d',
-        title:
-          '显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣显瘦中长款系带风衣',
-        describe: '柔软顺滑、上身挺括显瘦，垂坠飘逸、不易皱好打理。',
-        price: 888,
-        uerId: 1,
-        userIcon:
-          'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d'
-      }
-      // {
-      //   id: 9988,
-      //   image:
-      //     'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d',
-      //   title: '显瘦中长款系带风衣',
-      //   describe: '柔软顺滑、上身挺括显瘦，垂坠飘逸、不易皱好打理。',
-      //   price: 888,
-      //   uerId: 1,
-      //   userIcon:
-      //     'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d'
-      // }
-    ]
+    goods: []
   },
   created() {},
   methods: {},
@@ -66,7 +43,11 @@ wepy.page({
         active: 'home'
       })
     }
-    // console.log(this.$app.$options.globalData.userInfo)
+  },
+  async onLoad() {
+    let res = await getAllGoods()
+    console.log(res.data)
+    this.goods = res.data
   }
 })
 </script>

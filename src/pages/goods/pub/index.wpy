@@ -215,7 +215,7 @@ wepy.component({
     async handleSubmit() {
       if (!this.pubDisable) {
         let goods = wx.cloud.database().collection('goods-shelf')
-        const { avatarUrl, nickName, _openid } = await globalData.userInfo()
+        const { _openid } = await globalData.userInfo()
         const timeStamp = Date.now()
 
         // 上传图片
@@ -234,10 +234,10 @@ wepy.component({
             goods.add({
               data: {
                 ...this.form,
-                avatarUrl,
-                nickName,
                 timeStamp,
-                productId
+                productId,
+                view: 0,
+                collection: 0
               },
               success: res => {
                 wx.redirectTo({

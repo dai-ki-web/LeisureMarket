@@ -13,10 +13,6 @@
     <view class="card_title">
       {{title}}
     </view>
-    <!-- 描述 -->
-    <view class="card_describe">
-      {{describe}}
-    </view>
     <!-- 价格和头像 -->
     <view
       style="display:flex;"
@@ -43,7 +39,6 @@ wepy.component({
     id: 0,
     image: '',
     title: '',
-    describe: '',
     price: 0,
     uerId: 0,
     userIcon: ''

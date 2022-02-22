@@ -11,7 +11,7 @@
 <script>
 import wepy from '@wepy/core'
 import globalData from '@/globalData.js'
-import { dbAdd } from '@/Database.js'
+import { dbAdd } from '@/api.js'
 
 wepy.page({
   data: { openid: null },

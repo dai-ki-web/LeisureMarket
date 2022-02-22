@@ -7,7 +7,7 @@
 
 <script>
 import wepy from '@wepy/core'
-import { dbSearchOpenid } from '@/Database.js'
+import { dbSearchUser } from '@/api.js'
 import globalData from '@/globalData.js'
 
 wepy.page({
@@ -30,7 +30,7 @@ wepy.page({
             name: 'getOpenid',
             complete: res => {
               let { OPENID } = res.result
-              dbSearchOpenid('users', OPENID).then(res => {
+              dbSearchUser(OPENID).then(res => {
                 if (res.data.length) {
                   // 如果存在,将数据库中的数据缓存到本地
                   let info = res.data[0]

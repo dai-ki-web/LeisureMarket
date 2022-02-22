@@ -43,7 +43,7 @@
           "scene": null
         },
         {
-          "name": "pages/goods/detail/index",
+          "name": "pages/goods/detail",
           "pathName": "pages/goods/detail/index",
           "query": "",
           "scene": null

@@ -83,6 +83,7 @@ wepy.app({
       'pages/user/index',
       'pages/login/index',
       'pages/goods/detail/index',
+      'pages/goods/purchase/index',
 
       
     ],

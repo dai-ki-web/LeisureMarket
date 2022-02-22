@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.js"],"names":[],"mappings":";;;;;;;AAAA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA","file":"index.js","sourcesContent":["\nvar path = require('path')\n\nvar uniqueSlug = require('unique-slug')\n\nmodule.exports = function (filepath, prefix, uniq) {\n  return path.join(filepath, (prefix ? prefix + '-' : '') + uniqueSlug(uniq))\n}\n"]}

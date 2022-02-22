@@ -1,19 +1,90 @@
 <template>
   <view>
-    详情
+    <!-- 头像名字加关注 -->
+    <view class="publisherBar">
+      <van-image
+        fit="contain"
+        width="3rem"
+        height="3rem"
+        round
+        custom-class="avatar"
+        :src="publisherInfo.avatarUrl"
+      />
+      {{publisherInfo.nickName}}
+      <van-button>关注</van-button>
+    </view>
+
+    <!-- 商品信息 -->
+    <view class="goods">
+      <view>￥{{form.price}}</view>
+      <view>{{form.introduction}}</view>
+      <view>
+        <van-image
+          width="100%"
+          fit="widthFix"
+          v-for="(img,index) in form.imgList"
+          :src="img"
+          :key="'img'+index"
+        />
+      </view>
+      <!-- 时间 浏览量、收藏量 -->
+      <view>
+        {{form.timeStamp}}发布
+        {{form.view}}次浏览
+        {{form.collection}}人收藏
+      </view>
+    </view>
+
+    <!-- 留言评论区 -->
+    <view></view>
+
+    <van-goods-action>
+      <van-goods-action-icon
+        :icon="collect? 'star':'star-o'"
+        text="收藏"
+        @tap="handleCollect"
+      />
+      <van-goods-action-icon
+        icon="chat-o"
+        text="留言"
+      />
+      <van-goods-action-icon
+        icon="cart-o"
+        text="购物车"
+      />
+      <van-goods-action-button
+        text="加入购物车"
+        type="warning"
+      />
+      <van-goods-action-button
+        text="立即购买"
+        @tap="toPurchase"
+      />
+    </van-goods-action>
   </view>
 </template>
 
 <script>
 import wepy from '@wepy/core'
-import { getGoodsData } from '@/Database.js'
+import { getGoodsData, updateView } from '@/api.js'
+import moment from 'moment'
 
 wepy.page({
   data: {
-    dataId: 'bf4a0bf26214af2110c2802c6157c674'
+    dataId: 'bf4a0bf26214af2110c2802c6157c674',
+    form: {},
+    publisherInfo: {},
+    collect: false
   },
   methods: {
-    methodName() {}
+    handleCollect() {
+      console.log('收藏')
+      this.collect = !this.collect
+    },
+    // 点击立即购买
+    toPurchase() {
+      wx.navigateTo({ url: '/pages/goods/purchase/index' })
+    }
   },
   onLoad(option) {
     // this.openid=option.OPENID //无法响应
@@ -21,12 +92,51 @@ wepy.page({
     //   dataId: option.dataId
     // })
   },
-  onshow() {
-    console.log('1')
-    console.log(getGoodsData())
-    getGoodsData(this.dataId).then(res => {
-      console.log(res)
+  async onShow() {
+    const { res, publisherInfo } = await getGoodsData(this.dataId)
+    // 数据处理
+    // 图片链接换成临时链接
+    let tempFile = await wx.cloud.getTempFileURL({
+      fileList: res.imgList.map(item => {
+        return item.url
+      })
     })
+    let tempUrls = tempFile.fileList.map(file => {
+      return file.tempFileURL
+    })
+    res.imgList = tempUrls
+    // 时间戳格式转换
+    let time = moment(res.timeStamp).format('YYYY-MM-DD')
+    res.timeStamp = time
+
+    this.form = res
+    this.publisherInfo = publisherInfo
+  },
+  onUnload() {
+    // 页面卸载时修改数据的浏览量数据
+    console.log('out!')
+    updateView(this.dataId, this.form.view)
   }
 })
 </script>
+<config>
+{
+  usingComponents: {
+    "van-image": "~@/components/vant/image",
+    "van-button": "~@/components/vant/button",
+    "van-goods-action": "~@/components/vant/goods-action",
+    "van-goods-action-icon": "~@/components/vant/goods-action-icon",
+    "van-goods-action-button": "~@/components/vant/goods-action-button"
+  }
+}
+</config>
+
+<style lang="less" scoped>
+.publisherBar {
+  display: flex;
+  align-items: center;
+  .avatar {
+    margin-right: 5px;
+  }
+}
+</style>
