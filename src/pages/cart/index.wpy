@@ -1,52 +1,48 @@
 <template>
-  <view>
+  <view style="position:relative">
+    <navBar
+      isTab
+      title="购物车"
+    />
+
     <van-checkbox-group
       value="{{ result }}"
       bind:change="onChange"
     >
-      <van-checkbox name="a">
-        <van-card
-          desc="描述信息"
-          price="10"
-          title="商品标题"
-          thumb="{{ imageURL }}"
+      <van-cell-group>
+        <van-cell
+          wx:for="{{ list }}"
+          wx:key="index"
+          clickable
+          data-index="{{ index }}"
+          bind:click="toggle"
+          custom-class="cell"
+          title-class="cell_title"
+          value-class="cell_value"
         >
-          <view slot="num">
-            <van-stepper></van-stepper>
-          </view>
-        </van-card>
-      </van-checkbox>
-      <van-checkbox name="b">
-        <van-card
-          desc="描述信息"
-          price="10"
-          title="商品标题"
-          thumb="{{ imageURL }}"
-        >
-          <view slot="num">
-            <van-stepper></van-stepper>
-          </view>
-        </van-card>
-      </van-checkbox>
-      <van-checkbox name="c">
-        <van-card
-          desc="描述信息"
-          price="10"
-          title="商品标题"
-          thumb="{{ imageURL }}"
-        >
-          <view slot="num">
-            <van-stepper></van-stepper>
-          </view>
-        </van-card>
-      </van-checkbox>
+          <van-checkbox
+            slot="title"
+            catch:tap="noop"
+            class="checkboxes-{{ index }}"
+            name="{{ item }}"
+          />
+
+          <van-card
+            desc="简介"
+            price="10"
+            thumb="{{ imageURL }}"
+          >
+          </van-card>
+        </van-cell>
+      </van-cell-group>
     </van-checkbox-group>
 
     <van-submit-bar
       price="{{ 3000 }}"
       button-text="提交订单"
       bind:submit="onSubmit"
-      :safe-area-inset-bottom="false"
+      custom-class="submit_bar"
+      bar-class="submit_body"
     >
       <van-radio name="1">全选</van-radio>
     </van-submit-bar>
@@ -57,7 +53,10 @@
 import wepy from '@wepy/core'
 wepy.page({
   data: {
-    result: [],
+    list: ['a', 'b', 'c'],
+    result: ['a', 'b'],
+
+    // result: [],
     imageURL:
       'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d',
     value: ''
@@ -88,7 +87,29 @@ wepy.page({
     'van-submit-bar':'~@/components/vant/submit-bar',
     'van-checkbox-group':'~@/components/vant/checkbox-group',
     'van-checkbox':'~@/components/vant/checkbox',
+    'van-cell-group':'~@/components/vant/cell-group',
+    'van-cell':'~@/components/vant/cell',
     'van-radio':'~@/components/vant/radio',
+    "navBar":"~@/components/navBar/index"
   }
 }
 </config>
+
+
+<style lang="less" scoped>
+.cell {
+  align-items: center;
+}
+.cell_title {
+  flex: none !important;
+}
+.cell_value {
+  flex: auto !important;
+}
+.submit_bar {
+  bottom: 60px !important;
+}
+.submit_body {
+  align-items: baseline !important;
+}
+</style>

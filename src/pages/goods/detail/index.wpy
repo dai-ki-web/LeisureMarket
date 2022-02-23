@@ -1,5 +1,7 @@
 <template>
   <view>
+    <navBar />
+
     <!-- 头像名字加关注 -->
     <view class="publisherBar">
       <van-image
@@ -83,7 +85,9 @@ wepy.page({
     },
     // 点击立即购买
     toPurchase() {
-      wx.navigateTo({ url: '/pages/goods/purchase/index' })
+      wx.navigateTo({
+        url: `/pages/goods/purchase/index?goods=${[this.dataId]}`
+      })
     }
   },
   onLoad(option) {
@@ -126,7 +130,9 @@ wepy.page({
     "van-button": "~@/components/vant/button",
     "van-goods-action": "~@/components/vant/goods-action",
     "van-goods-action-icon": "~@/components/vant/goods-action-icon",
-    "van-goods-action-button": "~@/components/vant/goods-action-button"
+    "van-goods-action-button": "~@/components/vant/goods-action-button",
+    "navBar":"~@/components/navBar/index"
+
   }
 }
 </config>

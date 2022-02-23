@@ -1,5 +1,7 @@
 <template>
   <view>
+    <navBar title="登录" />
+
     <van-button
       type="default"
       open-type="getUserInfo"
@@ -56,7 +58,9 @@ wepy.page({
 <config>
 {
   usingComponents:{
-    "van-button": "~@/components/vant/button"
+    "van-button": "~@/components/vant/button",
+    "navBar":"~@/components/navBar/index"
+
   }
 }
 </config>

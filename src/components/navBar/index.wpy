@@ -1,0 +1,53 @@
+<template>
+  <view>
+    <van-nav-bar
+      :title="title"
+      title-class="nav_title"
+      :left-text="!isTab? '返回':''"
+      fixed
+      @click-left="onClickLeft"
+      :left-arrow="!isTab"
+      placeholder
+    />
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+wepy.page({
+  props: {
+    title: {
+      type: String,
+      default: '小程序'
+    },
+    isTab: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: {},
+  methods: {
+    onClickLeft() {
+      wx.navigateBack({
+        delta: 1
+      })
+    }
+  }
+})
+</script>
+<config>
+{
+  "usingComponents": {
+    "van-nav-bar": "~@/components/vant/nav-bar"
+  }
+}
+</config>
+
+<style lang="less" scoped>
+.nav_title {
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-align: center;
+  font-size: 18px;
+}
+</style>

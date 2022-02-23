@@ -1,0 +1,21 @@
+<template>
+  <view>
+
+    
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+wepy.page({
+  data: {
+    
+  }
+})
+</script>
+<config>
+{
+  "usingComponents": {
+  }
+}
+</config>

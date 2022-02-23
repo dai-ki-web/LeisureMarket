@@ -44,3 +44,21 @@ export const updateView = (id, viewNow) => {
 export const getAllGoods = () => {
   return db.collection('goods-shelf').get()
 }
+
+// 确认下单页的获取数据，需要对数据进行处理，只返回头图、简介、成色、价格、功能
+export const getPurchaseGoodsData = async (id) => {
+  const sheet = db.collection('goods-shelf')
+  // 用数据id换取数据
+  let res = (await sheet.doc(id).get()).data
+  const { openid, introduction, condition, ability, price, imgList } = res
+
+  let tempImg = await wx.cloud.getTempFileURL({
+    fileList: [imgList[0].url]
+  })
+  let headImg = (tempImg.fileList)[0].tempFileURL
+  // 利用openid换取用户数据
+  let user = (await dbSearchUser(openid)).data[0]
+  const { avatarUrl, nickName } = user
+  let publisherInfo = { avatarUrl, nickName }
+  return { introduction, condition, ability, price, publisherInfo, headImg }
+}

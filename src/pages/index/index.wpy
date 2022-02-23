@@ -1,5 +1,6 @@
 <template>
   <view :id="id">
+    <navBar isTab />
     <van-search
       value="{{ value }}"
       shape="round"
@@ -57,6 +58,8 @@ wepy.page({
   usingComponents:{
     'Card':'~@/components/Card/index',
     'van-search':'~@/components/vant/search',
+    "navBar":"~@/components/navBar/index"
+
   }
 }
 </config>

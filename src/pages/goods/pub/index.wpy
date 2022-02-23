@@ -1,5 +1,7 @@
 <template>
   <view>
+    <navBar title="发布" />
+
     <van-cell-group>
       <!-- 简介框 -->
       <van-field
@@ -91,7 +93,6 @@ import wepy from '@wepy/core'
 import Toast from '@/components/vant/toast/toast'
 import globalData from '@/globalData.js'
 import { randProductId } from '@/utils.js'
-
 import {
   CLASSES,
   CONDITON_OPTIONS,
@@ -100,6 +101,7 @@ import {
   CONDITONS,
   ABILITIES
 } from '@/constant.js'
+
 wepy.component({
   props: {},
   data: {
@@ -125,7 +127,9 @@ wepy.component({
       }
     ],
     conditonOptions: CONDITON_OPTIONS,
-    abilityOptions: ABILITY_OPTIONS
+    abilityOptions: ABILITY_OPTIONS,
+    conditons: CONDITONS,
+    abilities: ABILITIES
   },
   computed: {
     title() {
@@ -144,12 +148,10 @@ wepy.component({
       return this.form.class.join('/')
     },
     conditionFormatter() {
-      const conditons = CONDITONS
-      return conditons[this.form.condition]
+      return this.conditons[this.form.condition]
     },
     abilityFormatter() {
-      const abilities = ABILITIES
-      return abilities[this.form.ability]
+      return this.abilities[this.form.ability]
     },
     formValid() {
       if (!Number(this.form.price)) {
@@ -268,7 +270,9 @@ wepy.component({
     'van-uploader':'~@/components/vant/uploader',
     'van-picker':'~@/components/vant/picker',
     'van-popup':'~@/components/vant/popup',
-    "van-toast": '~@/components/vant/toast'
+    "van-toast": '~@/components/vant/toast',
+    "navBar":"~@/components/navBar/index"
+
   }
 }
 </config>

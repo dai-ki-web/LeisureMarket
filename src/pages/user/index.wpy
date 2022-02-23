@@ -1,5 +1,10 @@
 <template>
   <view>
+    <navBar
+      title="我的"
+      isTab
+    />
+
     {{userInfo.avatarUrl}}
     {{userInfo.nickName}}
   </view>
@@ -72,6 +77,7 @@ wepy.page({
 <config>
 {
   usingComponents:{
+    "navBar":"~@/components/navBar/index"
     
   }
 }
