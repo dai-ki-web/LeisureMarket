@@ -12,24 +12,97 @@
     <van-submit-bar
       :price="totalPrice"
       button-text="提交订单"
-      bind:submit="onSubmit"
+      @submit="onSubmit"
       custom-class="submit_bar"
       bar-class="submit_body"
     >
     </van-submit-bar>
+
+    <van-dialog
+      use-slot
+      use-title-slot
+      :show="showPayment"
+      :showConfirmButton="false"
+      bind:close="onClose"
+      bind:getuserinfo="getUserInfo"
+      width="240px"
+      custom-style="border-radius:5px"
+    >
+      <view
+        slot="title"
+        class="dialog_title"
+      >
+        <view class="close">+</view>
+        请输入支付密码
+      </view>
+      <view>
+        <view class="pay-ment">
+          ￥{{payPrice}}?
+
+        </view>
+        <view style="position:relative">
+          <input
+            :focus="showPayment"
+            type="number"
+            class="hiddenPwd"
+            @input="inputPassword($event)"
+          />
+          <view class="pwd">
+            <input
+              :value="pwd[0]"
+              type="password"
+              disabled
+            />
+            <input
+              :value="pwd[1]"
+              type="password"
+              disabled
+            />
+            <input
+              :value="pwd[2]"
+              disabled
+              type="password"
+            />
+            <input
+              :value="pwd[3]"
+              disabled
+              type="password"
+            />
+            <input
+              disabled
+              :value="pwd[4]"
+              type="password"
+            />
+
+            <input
+              disabled
+              :value="pwd[5]"
+              type="password"
+            />
+          </view>
+        </view>
+
+      </view>
+    </van-dialog>
+
+    <van-toast id="van-toast" />
+
   </view>
 </template>
 
 <script>
 import wepy from '@wepy/core'
-import { getPurchaseGoodsData } from '@/api.js'
+import { getPurchaseGoodsData, uploadOrder } from '@/api.js'
 import { CONDITONS, ABILITIES } from '@/constant.js'
+import Toast from '@/components/vant/toast/toast'
 
 wepy.page({
   data: {
+    pwd: [],
     dataIds: ['bf4a0bf26214af2110c2802c6157c674'],
     conditions: CONDITONS,
     abilities: ABILITIES,
+    showPayment: false,
     form: [
       {
         ability: 1,
@@ -37,7 +110,7 @@ wepy.page({
         headImg:
           'https://6465-develop-0guqmlrwce7ddc4b-1309099314.tcb.qcloud.la/o1W604w5V552D2T7T1j9t9Y3v8B136842565l2x2h7N1E9H9b398M1M6-photo0.png',
         introduction: 'liella 钥匙扣周边',
-        price: '90',
+        price: '9056',
         publisherInfo: {
           avatarUrl:
             'https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eratbkrzVE3eqRiaVdkkicssJQySlYtzuQVI0xOJVq1VTiaZqQnQX090gjhpg3zzltu9WRMPD8eLFGDA/132',
@@ -55,13 +128,61 @@ wepy.page({
       prices.forEach(item => {
         sum += item
       })
-      return sum * 100
+      return sum
+    },
+    payPrice() {
+      let prices = this.form.map(item => {
+        return Number(item.price)
+      })
+      let sum = 0
+      prices.forEach(item => {
+        sum += item
+      })
+      return (sum / 100).toFixed(2)
+    }
+  },
+  methods: {
+    inputPassword(e) {
+      let value = e.$wx.detail.value
+      let res = value.split('')
+      this.pwd = res
+      if (res.length === 6) {
+        wx.hideKeyboard() // 收起键盘
+        // 上传订单数据
+        uploadOrder(this.dataIds)
+        // 跳转到订单页
+      }
+    },
+    async onSubmit() {
+      // this.showPayment = true
+
+      // 开发用
+      // Toast.loading()
+      const toast = Toast.loading({
+        duration: 0, // 持续展示 toast
+        forbidClick: true
+      })
+      // 上传订单数据
+      let orderIds = await uploadOrder(this.dataIds, 2)
+      // 上传成功
+      if (orderIds.length == this.dataIds.length) {
+        // 提示购买成功，跳转到首页
+        toast.setData({
+          type: 'success',
+          message: '已成功下单'
+        })
+        setTimeout(() => {
+          Toast.clear()
+          // 跳转到首页
+          wx.switchTab({
+            url: '/pages/index/index'
+          })
+        }, 3000)
+      }
     }
   },
   onLoad(option) {
-    // this.setData({
-    //   dataIds: option.dataId
-    // })
+    // this.dataIds = option.dataId
   },
   async onShow() {
     // 用dataId申请数据
@@ -81,6 +202,50 @@ wepy.page({
     'good-card':"~@/components/good-card/index",
     'van-cell-group':'~@/components/vant/cell-group',
     'van-cell':'~@/components/vant/cell',
+    "van-dialog": "~@/components/vant/dialog",
+    "van-toast": "~@/components/vant/toast"
   }
 }
 </config>
+
+<style lang="less" scoped>
+.dialog_title {
+  position: relative;
+  margin: 0 0.5em;
+  .close {
+    position: absolute;
+    left: 0;
+  }
+}
+.pay-ment {
+  margin: 15px 0.5em;
+  border-bottom: 1px red solid;
+}
+.hiddenPwd {
+  position: absolute;
+  left: 1em;
+  display: none;
+  width: 90%;
+  background-color: pink;
+}
+.pwd {
+  margin: 0 1em;
+  display: flex;
+  justify-content: space-between;
+  input {
+    width: 25px;
+    height: 25px;
+    border-radius: 2px;
+    text-align: center;
+    background-color: #eee;
+  }
+}
+// 覆盖原组件的样式
+.van-dialog__header {
+  padding-top: 10px !important;
+}
+.van-dialog__footer {
+  position: static !important;
+  padding-bottom: 24px;
+}
+</style>

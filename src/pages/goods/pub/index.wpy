@@ -7,7 +7,7 @@
       <van-field
         type="textarea"
         :autosize="{minHeight:100}"
-        @change="fieldChange('introduction',$event)"
+        @change="introductionChange($event)"
         placeholder="简单介绍一下..."
         :border="true"
       >
@@ -51,7 +51,7 @@
         <van-field
           label="￥"
           type="number"
-          @change="fieldChange('price',$event)"
+          @change="priceChange($event)"
           :border="true"
           input-align="right"
           :error-message="priceError"
@@ -254,8 +254,12 @@ wepy.component({
           })
       }
     },
-    fieldChange(value, e) {
-      this.form[value] = e.$wx.detail.trim()
+    introductionChange(e) {
+      this.form.introduction = e.$wx.detail.trim()
+    },
+    priceChange(e) {
+      this.form.price = Number(e.$wx.detail)
+      console.log(Number(e.$wx.detail) * 100)
     }
   }
 })

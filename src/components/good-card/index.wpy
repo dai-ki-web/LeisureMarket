@@ -37,7 +37,7 @@
           type="primary"
         >{{abilities[item.ability]}}</van-tag>
         <view class="price">
-          {{item.price}}
+          {{item.price/100}}
         </view>
       </view>
     </view>

@@ -38,20 +38,17 @@ wepy.page({
           })
           // 跳转到用户页
           wx.switchTab({
-            url: '/pages/user'
+            url: '/pages/user/index'
           })
         })
       } else {
         // 点击拒绝，弹出toast
         wx.showToast('授权失败')
       }
-    },
-    onLoad(option) {
-      // this.openid=option.OPENID //无法响应
-      this.setData({
-        openid: option.OPENID
-      })
     }
+  },
+  onLoad(option) {
+    this.openid = option.OPENID
   }
 })
 </script>

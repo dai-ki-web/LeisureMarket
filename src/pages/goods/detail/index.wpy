@@ -91,10 +91,7 @@ wepy.page({
     }
   },
   onLoad(option) {
-    // this.openid=option.OPENID //无法响应
-    // this.setData({
-    //   dataId: option.dataId
-    // })
+    this.openid = option.OPENID
   },
   async onShow() {
     const { res, publisherInfo } = await getGoodsData(this.dataId)

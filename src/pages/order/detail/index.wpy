@@ -1,0 +1,29 @@
+<template>
+  <view>
+    <navBar title="订单详情"></navBar>
+    {{orderId}}
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+import { getOrderDetails } from '@/api.js'
+
+wepy.page({
+  data: { orderId: '' },
+  onLoad(option) {
+    this.orderId = option.orderId
+  },
+  async onShow() {
+    // 获取订单信息
+    getOrderDetails(this.orderId)
+  }
+})
+</script>
+<config>
+{
+  "usingComponents": {
+    "navBar":"~@/components/navBar/index",
+  }
+}
+</config>

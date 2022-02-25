@@ -1,3 +1,4 @@
+import globalData from './globalData'
 const db = wx.cloud.database()
 const _ = db.command
 
@@ -61,4 +62,45 @@ export const getPurchaseGoodsData = async (id) => {
   const { avatarUrl, nickName } = user
   let publisherInfo = { avatarUrl, nickName }
   return { introduction, condition, ability, price, publisherInfo, headImg }
+}
+
+// 上传订单数据
+export const uploadOrder = async (id, step) => {
+  const sheet = db.collection('orders')
+  const shelf = db.collection('goods-shelf')
+  const user = db.collection('users')
+  let timeStamp = Date.now()
+
+  // 将订单内包含的商品的状态修改为已卖出
+  let modifyTasks = id.map(item => {
+    return shelf.doc(item).update({
+      data: {
+        status: 2
+      }
+    })
+  })
+  Promise.all(modifyTasks)
+
+  let info = await globalData.userInfo()
+  // 数据库中添加订单数据（每一个商品生成一条）
+  let addTasks = id.map(item => {
+    return sheet.add({ data: { productId: item, step, timeStamp } })
+  })
+  let resArr = await Promise.all(addTasks).then(res => {
+    return res.map(item => { return item._id })
+  })
+  await user.doc(info._id).update({
+    data: {
+      orders: _.push(resArr)
+    }
+  })
+  return resArr
+}
+
+// 获取订单详情
+export const getOrderDetails = async (id) => {
+  const sheet = db.collection('orders')
+  // 用数据id换取数据
+  let res = (await sheet.doc(id).get()).data
+  console.log(res)
 }
