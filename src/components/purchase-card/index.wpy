@@ -1,0 +1,111 @@
+<template>
+  <view>
+    <!-- 头像名字 -->
+    <view class="publisherBar">
+      <van-image
+        fit="contain"
+        width="2rem"
+        height="2rem"
+        round
+        custom-class="avatar"
+        :src="item.publisherInfo.avatarUrl"
+      />
+      {{item.publisherInfo.nickName}}
+    </view>
+
+    <!-- 商品信息 -->
+
+    <view class="goods-info">
+      <van-image
+        width="8em"
+        height="8em"
+        fit="cover"
+        :src="item.headImg"
+      />
+
+      <view class="text">
+        <view class="introduction">
+          {{item.introduction}}
+        </view>
+        <van-tag
+          plain
+          type="primary"
+          v-if="showTag"
+        >{{conditions[item.condition]}}
+        </van-tag>
+        <van-tag
+          plain
+          type="primary"
+          v-if="showTag"
+        >{{abilities[item.ability]}}</van-tag>
+        <view class="price">
+          {{item.price/100}}
+        </view>
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+import { CONDITONS, ABILITIES } from '@/constant.js'
+
+wepy.page({
+  props: {
+    item: {
+      type: Object,
+      required: true
+    },
+    showTag: {
+      type: Boolean
+    }
+  },
+  data: {
+    conditions: CONDITONS,
+    abilities: ABILITIES
+  }
+})
+</script>
+<config>
+{
+  "usingComponents": {
+    "van-image": "~@/components/vant/image",
+    "van-tag": "~@/components/vant/tag",
+
+    "van-dialog": "~@/components/vant/dialog/"
+    
+
+  }
+}
+</config>
+
+<style lang="less" scoped>
+.publisherBar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 16px;
+  van-image {
+    margin-right: 10px;
+  }
+}
+.goods-info {
+  display: flex;
+  .text {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-left: 30px;
+    .price {
+      &::before {
+        content: '￥';
+        font-size: 14px;
+      }
+      text-align: right;
+      font-size: 20px;
+    }
+  }
+}
+</style>

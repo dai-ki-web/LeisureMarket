@@ -42,6 +42,15 @@
       >我的</van-tabbar-item>
     </van-tabbar>
 
+    <!-- 倒计时 -->
+    <view
+      class="countDown"
+      v-if="countDown!=0"
+    >
+      {{countDownFormatter}}
+    </view>
+
+    <!-- 发布弹框 -->
     <van-popup
       :show="show"
       @close="onClose"
@@ -70,9 +79,13 @@
 
 <script>
 import wepy from '@wepy/core'
+import eventHub from '@/common/eventHub'
+import moment from 'moment'
+
 wepy.component({
   data: {
     show: false,
+    countDown: 0,
     active: 'home',
     color: '#7A7783',
     selectedColor: '#6280f5',
@@ -99,7 +112,18 @@ wepy.component({
       }
     }
   },
-  attached() {},
+  attached() {
+    eventHub.$on('updateCountDown', time => {
+      this.countDown = time
+    })
+  },
+  computed: {
+    countDownFormatter() {
+      if (this.countDown) {
+        return moment(this.countDown).format('mm:ss')
+      }
+    }
+  },
   methods: {
     Change(e) {
       const data = e.$wx.detail
@@ -140,14 +164,28 @@ export default class CustomTabBar {
 <config>
 {
   usingComponents:{
-    "van-tabbar": "~@/components/vant/tabbar/index",
-    "van-tabbar-item": "~@/components/vant/tabbar-item/index",
-    "van-popup": "~@/components/vant/popup/index",
-    "van-button": "~@/components/vant/button/index",
-    "van-transition": "~@/components/vant/transition/index"
+    "van-tabbar": "~@/components/vant/tabbar",
+    "van-tabbar-item": "~@/components/vant/tabbar-item",
+    "van-popup": "~@/components/vant/popup",
+    "van-button": "~@/components/vant/button",
+    "van-transition": "~@/components/vant/transition",
+    "van-count-down": "~@/components/vant/count-down"
   }
 }
 </config>
 
 <style lang='less' scoped>
+.countDown {
+  position: absolute;
+  height: 20px;
+  width: calc(20% - 14px);
+  left: calc(20% + 7px);
+  top: -30px;
+  // margin: auto auto 90px ;
+  border-radius: 10px;
+  font-size: 12px;
+  text-align: center;
+  line-height: 20px;
+  background-color: red;
+}
 </style>

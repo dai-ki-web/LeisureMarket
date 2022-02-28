@@ -30,11 +30,13 @@
         <van-tag
           plain
           type="primary"
+          v-if="showTag"
         >{{conditions[item.condition]}}
         </van-tag>
         <van-tag
           plain
           type="primary"
+          v-if="showTag"
         >{{abilities[item.ability]}}</van-tag>
         <view class="price">
           {{item.price/100}}
@@ -54,6 +56,9 @@ wepy.page({
     item: {
       type: Object,
       required: true
+    },
+    showTag: {
+      type: Boolean
     }
   },
   data: {

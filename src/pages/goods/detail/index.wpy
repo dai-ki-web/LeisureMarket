@@ -33,7 +33,6 @@
       <view>
         {{form.timeStamp}}发布
         {{form.view}}次浏览
-        {{form.collection}}人收藏
       </view>
     </view>
 
@@ -42,21 +41,18 @@
 
     <van-goods-action>
       <van-goods-action-icon
-        :icon="collect? 'star':'star-o'"
-        text="收藏"
-        @tap="handleCollect"
-      />
-      <van-goods-action-icon
         icon="chat-o"
         text="留言"
       />
       <van-goods-action-icon
         icon="cart-o"
         text="购物车"
+        :info="countDownFormatter"
       />
       <van-goods-action-button
         text="加入购物车"
         type="warning"
+        @tap="addToCart"
       />
       <van-goods-action-button
         text="立即购买"
@@ -69,29 +65,47 @@
 <script>
 import wepy from '@wepy/core'
 import { getGoodsData, updateView } from '@/api.js'
+import globalData from '@/globalData.js'
 import moment from 'moment'
+import eventHub from '@/common/eventHub'
 
 wepy.page({
   data: {
+    countDown: 0,
+
     dataId: 'bf4a0bf26214af2110c2802c6157c674',
     form: {},
     publisherInfo: {},
     collect: false
   },
+  computed: {
+    countDownFormatter() {
+      if (this.countDown) {
+        return moment(this.countDown).format('mm:ss')
+      }
+    }
+  },
   methods: {
-    handleCollect() {
-      console.log('收藏')
-      this.collect = !this.collect
-    },
     // 点击立即购买
     toPurchase() {
       wx.navigateTo({
-        url: `/pages/goods/purchase/index?goods=${[this.dataId]}`
+        url: `/pages/goods/purchase/index?dataIds=${[this.dataId]}`
       })
+    },
+    // 点击加入购物车
+    async addToCart() {
+      globalData.cart.push(this.dataId)
+      // 更新定时器
+      eventHub.$emit('addToCart')
     }
   },
   onLoad(option) {
     this.openid = option.OPENID
+
+    // 监听倒计时更新
+    eventHub.$on('updateCountDown', time => {
+      this.countDown = time
+    })
   },
   async onShow() {
     const { res, publisherInfo } = await getGoodsData(this.dataId)
@@ -128,7 +142,8 @@ wepy.page({
     "van-goods-action": "~@/components/vant/goods-action",
     "van-goods-action-icon": "~@/components/vant/goods-action-icon",
     "van-goods-action-button": "~@/components/vant/goods-action-button",
-    "navBar":"~@/components/navBar/index"
+    "navBar":"~@/components/navBar/index",
+    "van-count-down": "~@/components/vant/count-down"
 
   }
 }
@@ -141,5 +156,11 @@ wepy.page({
   .avatar {
     margin-right: 5px;
   }
+}
+van-goods-action-icon {
+  flex: 1;
+}
+van-goods-action-button {
+  flex: 2 !important;
 }
 </style>

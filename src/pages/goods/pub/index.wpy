@@ -239,7 +239,7 @@ wepy.component({
                 timeStamp,
                 productId,
                 view: 0,
-                collection: 0
+                status: 0
               },
               success: res => {
                 wx.redirectTo({
@@ -258,8 +258,7 @@ wepy.component({
       this.form.introduction = e.$wx.detail.trim()
     },
     priceChange(e) {
-      this.form.price = Number(e.$wx.detail)
-      console.log(Number(e.$wx.detail) * 100)
+      this.form.price = Number(e.$wx.detail) * 100
     }
   }
 })

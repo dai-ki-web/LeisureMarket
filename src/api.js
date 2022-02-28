@@ -61,7 +61,7 @@ export const getPurchaseGoodsData = async (id) => {
   let user = (await dbSearchUser(openid)).data[0]
   const { avatarUrl, nickName } = user
   let publisherInfo = { avatarUrl, nickName }
-  return { introduction, condition, ability, price, publisherInfo, headImg }
+  return { id, introduction, condition, ability, price, publisherInfo, headImg }
 }
 
 // 上传订单数据

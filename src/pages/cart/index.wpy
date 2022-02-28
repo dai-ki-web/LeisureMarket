@@ -4,77 +4,163 @@
       isTab
       title="购物车"
     />
-
     <van-checkbox-group
-      value="{{ result }}"
-      bind:change="onChange"
+      :value=" result "
+      @change="onChange"
     >
-      <van-cell-group>
+      <van-cell-group custom-class="cell_group">
+
         <van-cell
-          wx:for="{{ list }}"
-          wx:key="index"
+          v-for="(item,index) in form"
+          :key="index"
           clickable
-          data-index="{{ index }}"
-          bind:click="toggle"
           custom-class="cell"
-          title-class="cell_title"
           value-class="cell_value"
         >
-          <van-checkbox
-            slot="title"
-            catch:tap="noop"
-            class="checkboxes-{{ index }}"
-            name="{{ item }}"
-          />
-
-          <van-card
-            desc="简介"
-            price="10"
-            thumb="{{ imageURL }}"
+          <!-- title-class="cell_title"
+           -->
+          <!-- <van-checkbox
+              slot="title"
+              class="checkboxes-{{ index }}"
+              :name="dataIds[index]"
+            /> -->
+          <van-swipe-cell
+            class="swipe-cell"
+            :right-width="50"
+            :name="index"
+            async-close
+            @close="handleDelete($event)"
           >
-          </van-card>
+
+            <van-checkbox
+              class="checkboxes-{{ index }}"
+              :name="dataIds[index]"
+            />
+
+            <cart-card
+              @click="clickItem"
+              :item="item"
+              :showTag="true"
+            />
+            <view
+              slot="right"
+              class="delete"
+            >删除</view>
+          </van-swipe-cell>
         </van-cell>
       </van-cell-group>
     </van-checkbox-group>
+    <view style="height:30px"></view>
 
     <van-submit-bar
-      price="{{ 3000 }}"
+      :price="payPrice"
       button-text="提交订单"
-      bind:submit="onSubmit"
+      @submit="onSubmit"
       custom-class="submit_bar"
       bar-class="submit_body"
+      placeholder
     >
-      <van-radio name="1">全选</van-radio>
+      <van-checkbox
+        :value="allChoose"
+        @change="chooseAll($event)"
+      >全选</van-checkbox>
     </van-submit-bar>
+
+    <!-- 删除的确认提示 -->
+    <van-dialog id="van-dialog" />
   </view>
 </template>
 
 <script>
 import wepy from '@wepy/core'
+import globalData from '@/globalData.js'
+import eventHub from '@/common/eventHub'
+import { getPurchaseGoodsData } from '@/api.js'
+import Dialog from '@/components/vant/dialog/dialog'
+
 wepy.page({
   data: {
-    list: ['a', 'b', 'c'],
-    result: ['a', 'b'],
-
-    // result: [],
-    imageURL:
-      'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d',
-    value: ''
+    dataIds: [],
+    result: [],
+    allChoose: false,
+    form: [],
+    chosen: []
   },
-  created() {},
-  methods: {
-    onChange($event) {
-      this.result = $event.$wx.detail
-      console.log($event.$wx.detail)
+  computed: {
+    payPrice() {
+      // 选出被选中的项
+      let choosenItem = this.form.filter(item => {
+        return this.result.indexOf(item.id) >= 0
+      })
+      // 返回每一项的价格做计算
+      let prices = choosenItem.map(item => {
+        return Number(item.price)
+      })
+      let sum = 0
+      prices.forEach(item => {
+        sum += item
+      })
+      return sum
     }
   },
-  onShow() {
+  methods: {
+    onChange(e) {
+      console.log(e)
+      this.result = e.$wx.detail
+      // console.log(e.$wx.detail)
+    },
+    clickItem() {
+      console.log('点击了商品，进入详情页')
+    },
+    // 全选
+    chooseAll(e) {
+      if (e.$wx.detail) {
+        this.result = this.dataIds
+      } else {
+        this.result = []
+      }
+      this.allChoose = !this.allChoose
+    },
+    // 删除单项
+    handleDelete(e) {
+      let { instance, name: index } = e.$wx.detail
+      instance.close()
+      Dialog.confirm({
+        message: '确定删除吗？'
+      }).then(() => {
+        // 确定
+        this.form.splice(index, 1)
+      })
+    },
+    // 点击提交订单
+    onSubmit() {
+      // 跳转到购买页，参数为选中项的id
+      wx.navigateTo({
+        url: `/pages/goods/purchase/index?dataIds=${this.result}`
+      }).then(() => {
+        // 将页面状态清空
+        setTimeout(() => {
+          this.result = []
+        }, 2000)
+      })
+    }
+  },
+  async onShow() {
     if (this.$wx && typeof this.$wx.getTabBar === 'function') {
       const tabBar = this.$wx.getTabBar()
       tabBar.setData({
         active: 'cart'
       })
     }
+
+    this.dataIds = globalData.cart
+    // 获取数据:头图，简介，价格，标签
+    // 用dataId申请数据
+    let tasks = this.dataIds.map(data => {
+      return getPurchaseGoodsData(data)
+    })
+    let res = await Promise.all(tasks)
+    this.form = res
   }
 })
 </script>
@@ -82,23 +168,31 @@ wepy.page({
 <config>
 {
   usingComponents:{
-    'van-card':'~@/components/vant/card',
-    'van-stepper':'~@/components/vant/stepper',
     'van-submit-bar':'~@/components/vant/submit-bar',
     'van-checkbox-group':'~@/components/vant/checkbox-group',
     'van-checkbox':'~@/components/vant/checkbox',
     'van-cell-group':'~@/components/vant/cell-group',
     'van-cell':'~@/components/vant/cell',
-    'van-radio':'~@/components/vant/radio',
-    "navBar":"~@/components/navBar/index"
+    "navBar":"~@/components/navBar/index",
+    'cart-card':"~@/components/cart-card/index",
+    "van-swipe-cell": "~@/components/vant/swipe-cell",
+    "van-dialog": "~@/components/vant/dialog"
+
   }
 }
 </config>
 
 
 <style lang="less" scoped>
+.cell_group {
+  touch-action: none;
+}
 .cell {
   align-items: center;
+  // touch-action: none;
+}
+.swipe-cell {
+  display: flex;
 }
 .cell_title {
   flex: none !important;
@@ -107,9 +201,19 @@ wepy.page({
   flex: auto !important;
 }
 .submit_bar {
-  bottom: 60px !important;
+  // position: sticky !important;
+  // bottom: 0px !important;
+  padding-bottom: 60px;
 }
 .submit_body {
   align-items: baseline !important;
+}
+.delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 50px;
+  background-color: red;
 }
 </style>

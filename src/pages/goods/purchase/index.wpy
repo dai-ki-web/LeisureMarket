@@ -6,7 +6,10 @@
         v-for="(item,index) in form"
         :key="'goods'+index"
       >
-        <good-card :item="item"></good-card>
+        <purchase-card
+          :item="item"
+          :showTag="false"
+        />
       </van-cell>
     </van-cell-group>
     <van-submit-bar
@@ -99,25 +102,11 @@ import Toast from '@/components/vant/toast/toast'
 wepy.page({
   data: {
     pwd: [],
-    dataIds: ['bf4a0bf26214af2110c2802c6157c674'],
+    dataIds: [],
     conditions: CONDITONS,
     abilities: ABILITIES,
     showPayment: false,
-    form: [
-      {
-        ability: 1,
-        condition: 1,
-        headImg:
-          'https://6465-develop-0guqmlrwce7ddc4b-1309099314.tcb.qcloud.la/o1W604w5V552D2T7T1j9t9Y3v8B136842565l2x2h7N1E9H9b398M1M6-photo0.png',
-        introduction: 'liella 钥匙扣周边',
-        price: '9056',
-        publisherInfo: {
-          avatarUrl:
-            'https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eratbkrzVE3eqRiaVdkkicssJQySlYtzuQVI0xOJVq1VTiaZqQnQX090gjhpg3zzltu9WRMPD8eLFGDA/132',
-          nickName: '大辉'
-        }
-      }
-    ]
+    form: []
   },
   computed: {
     totalPrice() {
@@ -182,15 +171,15 @@ wepy.page({
     }
   },
   onLoad(option) {
-    // this.dataIds = option.dataId
+    this.dataIds = option.dataIds.split(',')
   },
   async onShow() {
     // 用dataId申请数据
-    // let tasks = this.dataIds.map(data => {
-    //   return getPurchaseGoodsData(data)
-    // })
-    // let res = await Promise.all(tasks)
-    // console.log(res)
+    let tasks = this.dataIds.map(data => {
+      return getPurchaseGoodsData(data)
+    })
+    let res = await Promise.all(tasks)
+    this.form = res
   }
 })
 </script>
@@ -199,7 +188,7 @@ wepy.page({
   "usingComponents": {
     "navBar":"~@/components/navBar/index",
     'van-submit-bar':'~@/components/vant/submit-bar',
-    'good-card':"~@/components/good-card/index",
+    'purchase-card':"~@/components/purchase-card/index",
     'van-cell-group':'~@/components/vant/cell-group',
     'van-cell':'~@/components/vant/cell',
     "van-dialog": "~@/components/vant/dialog",
