@@ -1,10 +1,10 @@
 export const TITLES = {
-  class: '分类',
+  category: '分类',
   condition: '成色',
   ability: '功能'
 }
 
-export const CLASSES = {
+export const CATEGORIES = {
   图书: ['教辅', '小说', '社科'],
   美妆: ['粉底', '眼影', '腮红']
 }

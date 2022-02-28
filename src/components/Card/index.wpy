@@ -5,7 +5,7 @@
       <img
         class="card_header_img"
         style="width:100%"
-        :src="image"
+        :src="image.url"
         alt=""
       >
     </view>
@@ -22,9 +22,10 @@
 
       <view class="card_icon">
         <img
-          :src="image"
+          :src="publisher.avatarUrl"
           class="card_icon_img"
         >
+        {{publisher.nickName}}
       </view>
 
     </view>
@@ -36,12 +37,11 @@
 import wepy from '@wepy/core'
 wepy.component({
   props: {
-    id: 0,
-    image: '',
-    title: '',
-    price: 0,
-    uerId: 0,
-    userIcon: ''
+    id: { type: String, required: true, default: '' },
+    image: { type: Object, required: true, default: {} },
+    title: { type: String, required: true, default: '' },
+    price: { type: Number, required: true, default: 0 },
+    publisher: { type: Object, required: true, default: {} }
   },
   data: {}
 })

@@ -95,6 +95,8 @@ wepy.app({
       'pages/cart/index',
       'pages/user/index',
       'pages/login/index',
+      'pages/search/main/index',
+      'pages/search/detail/index',
       'pages/goods/detail/index',
       'pages/order/detail/index',
       'pages/goods/purchase/index',

@@ -1,0 +1,57 @@
+<template>
+  <view>
+    <navBar title="分类搜索"></navBar>
+    <van-tree-select
+      :items="category"
+      height="100vw"
+      :main-active-index="navIndex "
+      :active-id="activeId"
+      @click-nav="onClickNav($event)"
+      @click-item="onClickItem($event)"
+    />
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+import { CATEGORIES } from '@/constant.js'
+wepy.page({
+  data: {
+    category: [],
+    navIndex: 0,
+    activeId: null
+  },
+  methods: {
+    onClickNav(e) {
+      let { index } = e.$wx.detail
+      console.log(index)
+      this.navIndex = index
+    },
+    onClickItem(e) {
+      let { id } = e.$wx.detail
+      let navClass = this.category[this.navIndex].text
+      let res = `${navClass},${CATEGORIES[navClass][id]}`
+      wx.navigateTo({
+        url: `/pages/search/detail/index?category=${res}`
+      })
+    }
+  },
+  onLoad() {
+    let category = Object.keys(CATEGORIES).map(item => {
+      let children = CATEGORIES[item].map((child, index) => {
+        return { text: child, id: index }
+      })
+      return { text: item, children }
+    })
+    this.category = category
+  }
+})
+</script>
+<config>
+{
+  "usingComponents": {
+    "navBar":"~@/components/navBar/index",
+    "van-tree-select": "~@/components/vant/tree-select"
+  }
+}
+</config>

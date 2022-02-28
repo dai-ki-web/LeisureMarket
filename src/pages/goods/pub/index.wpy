@@ -26,7 +26,7 @@
       <!-- 分类 -->
       <van-cell
         title="分类"
-        @tap="handlePopupOptions('class')"
+        @tap="handlePopupOptions('category')"
       >
         {{classFormatter}}
       </van-cell>
@@ -94,7 +94,7 @@ import Toast from '@/components/vant/toast/toast'
 import globalData from '@/globalData.js'
 import { randProductId } from '@/utils.js'
 import {
-  CLASSES,
+  CATEGORIES,
   CONDITON_OPTIONS,
   ABILITY_OPTIONS,
   TITLES,
@@ -112,18 +112,18 @@ wepy.component({
     form: {
       introduction: '',
       imgList: [],
-      class: [],
+      category: [],
       condition: null,
       ability: null,
       price: null
     },
     showPopup: false,
-    classOptions: [
+    categoryOptions: [
       {
-        values: Object.keys(CLASSES)
+        values: Object.keys(CATEGORIES)
       },
       {
-        values: CLASSES['图书']
+        values: CATEGORIES['图书']
       }
     ],
     conditonOptions: CONDITON_OPTIONS,
@@ -138,14 +138,14 @@ wepy.component({
     },
     option() {
       const items = {
-        class: this.classOptions,
+        category: this.categoryOptions,
         condition: this.conditonOptions,
         ability: this.abilityOptions
       }
       return items[this.itemName]
     },
     classFormatter() {
-      return this.form.class.join('/')
+      return this.form.category.join('/')
     },
     conditionFormatter() {
       return this.conditons[this.form.condition]
@@ -162,7 +162,7 @@ wepy.component({
       let valid =
         !!this.form.introduction &&
         !!this.imgList.length &&
-        !!this.form.class.length &&
+        !!this.form.category.length &&
         !!this.form.condition &&
         !!this.form.ability & !this.priceError
       this.pubDisable = !valid
@@ -198,19 +198,18 @@ wepy.component({
       this.itemName = mode
     },
     onClassChange(e) {
-      if (this.itemName !== 'class') {
+      if (this.itemName !== 'category') {
         return
       }
       const { picker, value } = e.$wx.detail
-      picker.setColumnValues(1, CLASSES[value[0]])
+      picker.setColumnValues(1, CATEGORIES[value[0]])
     },
     onClose() {
       this.showPopup = false
     },
     onConfirm(e) {
-      const { value } = e.$wx.detail
+      let { value } = e.$wx.detail
       this.form[this.itemName] = value.value || value
-      console.log(this.itemName)
       this.showPopup = false
     },
 

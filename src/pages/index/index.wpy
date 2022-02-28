@@ -7,6 +7,7 @@
       background="#4fc08d"
       placeholder="请输入搜索关键词"
       disabled
+      @click="toSearch"
     />
     <view style="display:flex">
       <Card
@@ -36,7 +37,15 @@ wepy.page({
     goods: []
   },
   created() {},
-  methods: {},
+  methods: {
+    // 点击搜索框
+    toSearch() {
+      // 跳转到分类搜索页
+      wx.navigateTo({
+        url: '/pages/search/main/index'
+      })
+    }
+  },
   onShow() {
     if (this.$wx && typeof this.$wx.getTabBar === 'function') {
       const tabBar = this.$wx.getTabBar()

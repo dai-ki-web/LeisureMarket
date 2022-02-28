@@ -59,6 +59,18 @@
           "pathName": "pages/order/detail/index",
           "query": "orderId=54ad1eea6218ec3012e16ebb55f07159",
           "scene": null
+        },
+        {
+          "name": "pages/search/main",
+          "pathName": "pages/search/main/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/search/detail",
+          "pathName": "pages/search/detail/index",
+          "query": "",
+          "scene": null
         }
       ]
     }

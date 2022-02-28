@@ -1,6 +1,7 @@
 import globalData from './globalData'
 const db = wx.cloud.database()
 const _ = db.command
+const $ = db.command.aggregate
 
 export const dbAdd = (sheetName, data) => {
   const sheet = db.collection(sheetName)
@@ -103,4 +104,14 @@ export const getOrderDetails = async (id) => {
   // 用数据id换取数据
   let res = (await sheet.doc(id).get()).data
   console.log(res)
+}
+
+// 根据分类搜索数据库 返回id，成色、功能、价格、用户头像名称、简介、头图
+export const getClasses = async (data) => {
+  return await wx.cloud.callFunction({
+    name: 'getClassList',
+    data
+  }).then(res => {
+    return res.result
+  })
 }
