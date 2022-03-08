@@ -1,0 +1,131 @@
+<template>
+  <view>
+    <!-- 评论主体 -->
+    <view>
+      <!-- 发布人 -->
+      <view class="user">
+        <van-image
+          :src="avatar"
+          width="30"
+          height="30"
+          fit="cover"
+          round
+        />
+        <label
+          class="nickName"
+          style="color:blue"
+        >{{nickName}}</label>
+        |
+        <label>{{timeFormatter}}</label>
+      </view>
+
+      <!-- 评论内容 -->
+      <view class="comment">{{content}}
+        <!-- 回复 -->
+        <view class="reply">
+          <view
+            v-for="(item,index) in reply"
+            :key="'reply'+index"
+            @click.stop="itemReply(item.userId,item.nickName)"
+          >
+            <van-image
+              :src="item.avatarUrl"
+              width="20"
+              height="20"
+              fit="cover"
+              round
+            />
+
+            {{item.nickName}}:
+            {{item.value}}</view>
+
+        </view>
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+import eventHub from '@/common/eventHub'
+import { getReply } from '@/api.js'
+import moment from 'moment'
+import 'moment/locale/zh-cn'
+
+wepy.component({
+  props: {
+    userId: {
+      type: String,
+      required: true
+    },
+    avatar: {
+      type: String,
+      required: true
+    },
+    nickName: {
+      type: String,
+      required: true
+    },
+    content: {
+      type: String,
+      required: true
+    },
+    time: {
+      type: Number,
+      required: true
+    }
+  },
+  data: {
+    reply: {}
+  },
+  computed: {
+    timeFormatter() {
+      return moment(this.time).fromNow()
+    }
+  },
+  methods: {
+    itemReply(id, name) {
+      console.log(22)
+      eventHub.$emit('replyToReply', { id, name })
+    }
+  },
+  async attached() {
+    // 组件加载时通过openid获取对应用户的头像、昵称
+    // let { avatarUrl, nickName } = await getBasicInfo(this.userId)
+    // this.user = { avatarUrl, nickName }
+    // 在回复表中查询是否有回复
+    let id = this.userId
+    let res = await getReply({ id })
+    this.reply = res
+    console.log(this.reply)
+  }
+})
+</script>
+<config>
+{
+  "usingComponents": {
+    "van-image": "~@/components/vant/image"
+  }
+}
+</config>
+
+<style lang="less" scoped>
+.user {
+  display: flex;
+  align-items: top;
+  van-image {
+    margin-right: 5px;
+  }
+  label {
+    display: inline-block;
+    padding: 0 5px;
+  }
+}
+.comment {
+  margin: -10px 0 0 40px;
+}
+.reply {
+  // margin-left: 40px;
+}
+</style>

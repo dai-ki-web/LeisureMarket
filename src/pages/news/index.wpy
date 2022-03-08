@@ -1,0 +1,20 @@
+<template>
+  <view>
+    <navBar title="消息箱"></navBar>
+
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+wepy.page({
+  data: {}
+})
+</script>
+<config>
+{
+  "usingComponents": {
+    "navBar":"~@/components/navBar/index",
+  }
+}
+</config>

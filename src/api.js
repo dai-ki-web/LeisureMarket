@@ -19,16 +19,13 @@ export const dbSearchUser = (openid) => {
 }
 
 // 展示详情页时通过数据id向数据库查询数据
-export const getGoodsData = async (id) => {
-  const sheet = db.collection('goods-shelf')
-  // 用数据id换取数据
-  let res = (await sheet.doc(id).get()).data
-  const { openid } = res
-  // 利用openid换取用户数据
-  let user = (await dbSearchUser(openid)).data[0]
-  const { avatarUrl, nickName } = user
-  let publisherInfo = { avatarUrl, nickName }
-  return { res, publisherInfo }
+export const getGoodsDetails = async (data) => {
+  return await wx.cloud.callFunction({
+    name: 'getGoodsDetail',
+    data
+  }).then(res => {
+    return res.result
+  })
 }
 
 // 更新浏览量数据
@@ -111,6 +108,57 @@ export const getClasses = async (data) => {
   return await wx.cloud.callFunction({
     name: 'getClassList',
     data
+  }).then(res => {
+    return res.result
+  })
+}
+
+export const uploadComment = async (data, id) => {
+  return await wx.cloud.callFunction({
+    name: 'uploadComment',
+    data: {
+      data, id
+    }
+  }).then(res => {
+    return res.result
+  })
+}
+
+export const uploadReply = async (data, id) => {
+  return await wx.cloud.callFunction({
+    name: 'uploadReply',
+    data: {
+      data, id
+    }
+  }).then(res => {
+    return res.result
+  })
+}
+
+export const getGoodsComments = async (data) => {
+  return await wx.cloud.callFunction({
+    name: 'getGoodsComments',
+    data
+  }).then(res => {
+    return res.result
+  })
+}
+
+export const getReply = async (data) => {
+  return await wx.cloud.callFunction({
+    name: 'getReply',
+    data
+  }).then(res => {
+    return res.result
+  })
+}
+
+export const getBasicInfo = async (openid) => {
+  return await wx.cloud.callFunction({
+    name: 'getBasicInfo',
+    data: {
+      openid
+    }
   }).then(res => {
     return res.result
   })

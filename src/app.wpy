@@ -90,6 +90,7 @@ wepy.app({
     cloud:true,
     pages: [
       'pages/index/index',
+      'pages/news/index',
       'pages/init',
       'pages/goods/pub/index',
       'pages/cart/index',
@@ -122,7 +123,7 @@ wepy.app({
       pagePath: "pages/init",
       text: "发布"
     }, {
-      pagePath: "pages/init",
+      pagePath: "pages/news/index",
       text: "消息"
     }, {
       pagePath: "pages/user/index",

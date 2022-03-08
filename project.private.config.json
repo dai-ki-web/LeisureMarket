@@ -45,7 +45,7 @@
         {
           "name": "pages/goods/detail",
           "pathName": "pages/goods/detail/index",
-          "query": "",
+          "query": "dataId=bf4a0bf26214af2110c2802c6157c674",
           "scene": null
         },
         {

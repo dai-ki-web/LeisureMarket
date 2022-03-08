@@ -1,3 +1,4 @@
+
 <template>
   <view>
     <navBar />
@@ -24,7 +25,7 @@
         <van-image
           width="100%"
           fit="widthFix"
-          v-for="(img,index) in form.imgList"
+          v-for="(img,index) in form.tempImgList"
           :src="img"
           :key="'img'+index"
         />
@@ -37,26 +38,77 @@
     </view>
 
     <!-- 留言评论区 -->
-    <view></view>
+    <view id="comment">
+      <!-- 标题 -->
+      <view style="font-size:24px;font-weight:600">互动({{comments.length}})</view>
+      <!-- 点击留言 -->
+
+      <!-- 以往留言 -->
+      <view>
+        <comment-item
+          v-for="(item,index) in comments"
+          :key="'comment'+index"
+          :userId="item.userId"
+          :avatar="item.avatarUrl"
+          :nickName="item.nickName"
+          :content="item.value"
+          :time="item.timeStamp"
+          @click="toReply(item.userId,item.nickName)"
+        ></comment-item>
+
+        <van-empty
+          v-if="comments.length===0"
+          class="custom-image"
+          image="https://img.yzcdn.cn/vant/custom-empty-image.png"
+          description="还没有人评论噢"
+        />
+      </view>
+    </view>
+    <button @click="test">发送测试 </button>
+    <!-- 占位 -->
+    <view style="height:85px"></view>
 
     <van-goods-action>
+      <view
+        v-if="!input"
+        :show="!input"
+        style="flex:5;padding-left:10px"
+      ><input
+          class="comment"
+          :placeholder="placeholder"
+          adjust-position
+          :focus="!input"
+        />
+      </view>
+
       <van-goods-action-icon
         icon="chat-o"
         text="留言"
+        v-if="input"
+        @click="toAsk"
+      />
+      <van-goods-action-icon
+        icon="cart-o"
+        text="购物"
+        v-if="!input"
+        @click="input=true"
       />
       <van-goods-action-icon
         icon="cart-o"
         text="购物车"
         :info="countDownFormatter"
+        v-if="input"
       />
       <van-goods-action-button
         text="加入购物车"
         type="warning"
         @tap="addToCart"
+        v-if="input"
       />
       <van-goods-action-button
         text="立即购买"
         @tap="toPurchase"
+        v-if="input"
       />
     </van-goods-action>
   </view>
@@ -64,7 +116,13 @@
 
 <script>
 import wepy from '@wepy/core'
-import { getGoodsData, updateView } from '@/api.js'
+import {
+  updateView,
+  uploadComment,
+  getGoodsDetails,
+  getGoodsComments,
+  uploadReply
+} from '@/api.js'
 import globalData from '@/globalData.js'
 import moment from 'moment'
 import eventHub from '@/common/eventHub'
@@ -72,11 +130,15 @@ import eventHub from '@/common/eventHub'
 wepy.page({
   data: {
     countDown: 0,
-
-    dataId: 'bf4a0bf26214af2110c2802c6157c674',
+    dataId: '',
     form: {},
     publisherInfo: {},
-    collect: false
+    comments: [],
+    input: true,
+    placeholder: '问问细节',
+    mode: 0, // 提问 0   |  回答 1
+    context: '',
+    replyTo: ''
   },
   computed: {
     countDownFormatter() {
@@ -97,36 +159,103 @@ wepy.page({
       globalData.cart.push(this.dataId)
       // 更新定时器
       eventHub.$emit('addToCart')
+    },
+    // 发送评论
+    onSubmit(e) {
+      let { value } = e.$wx.detail
+      // 将评论传入数据库（内容、时间）
+      // uploadComment()
+      // 将评论加入当前页面的评论数据中而不是重新刷新
+      console.log()
+    },
+    // 发送评论测试
+    async test() {
+      let testData = { value: '能再便宜点吗?' }
+      let { value } = testData
+      let { avatarUrl, nickName } = await globalData.userInfo()
+      let test
+      // 如果mode为1
+      if (this.mode) {
+        let replyTo = this.replyTo
+        test = await uploadReply(
+          {
+            value,
+            timeStamp: Date.now(),
+            avatarUrl,
+            nickName,
+            replyTo
+          },
+          this.dataId
+        )
+      } else {
+        // 如果mode为0
+        test = await uploadComment(
+          {
+            value,
+            timeStamp: Date.now(),
+            avatarUrl,
+            nickName
+          },
+          this.dataId
+        )
+      }
+      // 将评论传入数据库（内容、时间）
+
+      console.log(test, 'end')
+      // 将评论push进当前页面的数据中
+      // if (test) {
+      //   let { _openid } = await globalData.userInfo()
+      //   this.comments.push({
+      //     value,
+      //     timeStamp: Date.now(),
+      //     children: [],
+      //     userId: _openid
+      //   })
+      // }
+    },
+    // 问问细节
+    toAsk() {
+      this.input = false
+      this.placeholder = '问问细节'
+      this.mode = 0
+    },
+    // 点击回复已有评论
+    toReply(userid, name) {
+      this.input = false
+      this.placeholder = `回复@${name}`
+      this.mode = 1
+      this.replyTo = userid
+      console.log(11)
     }
   },
-  onLoad(option) {
-    this.openid = option.OPENID
+  async onLoad(option) {
+    this.dataId = option.dataId
 
     // 监听倒计时更新
     eventHub.$on('updateCountDown', time => {
       this.countDown = time
     })
-  },
-  async onShow() {
-    const { res, publisherInfo } = await getGoodsData(this.dataId)
-    // 数据处理
-    // 图片链接换成临时链接
-    let tempFile = await wx.cloud.getTempFileURL({
-      fileList: res.imgList.map(item => {
-        return item.url
-      })
-    })
-    let tempUrls = tempFile.fileList.map(file => {
-      return file.tempFileURL
-    })
-    res.imgList = tempUrls
-    // 时间戳格式转换
-    let time = moment(res.timeStamp).format('YYYY-MM-DD')
-    res.timeStamp = time
 
-    this.form = res
-    this.publisherInfo = publisherInfo
+    // 监听楼中回复
+    eventHub.$on('replyToReply', res => {
+      let { id, name } = res
+      this.toReply(id, name)
+    })
+
+    // 获取商品信息
+    let res = await getGoodsDetails({ id: this.dataId })
+    let comments = await getGoodsComments({ id: this.dataId })
+    let { goods, publisher } = res
+
+    // 时间戳格式转换
+    let time = moment(goods.timeStamp).format('YYYY-MM-DD')
+    goods.timeStamp = time
+
+    this.form = goods
+    this.publisherInfo = publisher
+    this.comments = comments
   },
+  async onShow() {},
   onUnload() {
     // 页面卸载时修改数据的浏览量数据
     console.log('out!')
@@ -143,7 +272,11 @@ wepy.page({
     "van-goods-action-icon": "~@/components/vant/goods-action-icon",
     "van-goods-action-button": "~@/components/vant/goods-action-button",
     "navBar":"~@/components/navBar/index",
-    "van-count-down": "~@/components/vant/count-down"
+    "van-count-down": "~@/components/vant/count-down",
+    "van-popup": "~@/components/vant/popup",
+    "van-field": "~@/components/vant/field",
+    "van-empty": "~@/components/vant/empty",
+    "comment-item": "~@/components/comment-item/index",
 
   }
 }
@@ -157,6 +290,16 @@ wepy.page({
     margin-right: 5px;
   }
 }
+.comment {
+  margin: 0 auto;
+  width: 90%;
+  height: 17px;
+  background-color: #eee;
+  border-radius: 15px;
+  padding: 3px 10px;
+  font-size: 14px;
+}
+
 van-goods-action-icon {
   flex: 1;
 }
