@@ -91,7 +91,7 @@ wepy.app({
     pages: [
       'pages/index/index',
       'pages/news/index',
-      'pages/init',
+      'pages/nope/index',
       'pages/goods/pub/index',
       'pages/cart/index',
       'pages/user/index',
@@ -120,7 +120,7 @@ wepy.app({
       pagePath: "pages/cart/index",
       text: "购物车"
     }, {
-      pagePath: "pages/init",
+      pagePath: "pages/nope/index",
       text: "发布"
     }, {
       pagePath: "pages/news/index",

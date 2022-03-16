@@ -8,12 +8,11 @@ const db = cloud.database()
 const _ = db.command
 const $ = db.command.aggregate
 // 云函数入口函数
-// 根据分类搜索数据库 返回id，成色、功能、价格、用户头像名称、简介、头图
+// 返回所有在架商品信息 返回id，价格、用户头像名称、简介、头图
 exports.main = async (event, context) => {
-  let category = event.category.split(',')
   const sheet = db.collection('goods-shelf')
   let res = await sheet.aggregate().match({
-    category: _.eq(category)
+    status: 0
   }).lookup({
     from: 'users',
     let: {
@@ -22,7 +21,8 @@ exports.main = async (event, context) => {
     pipeline: $.pipeline().match(_.expr($.eq(['$_openid', '$$openid']))).project({
       _id: false,
       avatarUrl: true,
-      nickName: true
+      nickName: true,
+      _openid: true
     }).done(),
     as: 'publisher'
   }).project({
@@ -33,16 +33,6 @@ exports.main = async (event, context) => {
     ability: true,
     headImg: true
   }).end()
-
-  // 换头图的临时链接
-  // res.list.forEach(async item => {
-  //   let tempFile = await cloud.getTempFileURL({
-  //     fileList: [item.headImg[0].url]
-  //   }).then((res) => {
-  //     return res.fileList[0].tempFileURL
-  //   })
-  //   item.headImg = tempFile
-  // })
 
   return res.list
 }

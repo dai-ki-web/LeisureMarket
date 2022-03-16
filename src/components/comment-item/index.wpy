@@ -23,22 +23,13 @@
       <view class="comment">{{content}}
         <!-- 回复 -->
         <view class="reply">
-          <view
+          <reply-item
             v-for="(item,index) in reply"
             :key="'reply'+index"
-            @click.stop="itemReply(item.userId,item.nickName)"
-          >
-            <van-image
-              :src="item.avatarUrl"
-              width="20"
-              height="20"
-              fit="cover"
-              round
-            />
-
-            {{item.nickName}}:
-            {{item.value}}</view>
-
+            :item="item"
+            :time="item.createTime"
+            @click.stop="itemReply(item.reply2CommentId,item.userId,item.nickName)"
+          ></reply-item>
         </view>
       </view>
     </view>
@@ -55,6 +46,10 @@ import 'moment/locale/zh-cn'
 
 wepy.component({
   props: {
+    commentId: {
+      type: String,
+      required: true
+    },
     userId: {
       type: String,
       required: true
@@ -72,7 +67,7 @@ wepy.component({
       required: true
     },
     time: {
-      type: Number,
+      type: Date,
       required: true
     }
   },
@@ -85,27 +80,36 @@ wepy.component({
     }
   },
   methods: {
-    itemReply(id, name) {
-      console.log(22)
-      eventHub.$emit('replyToReply', { id, name })
+    itemReply(commentId, userId, name) {
+      eventHub.$emit('replyToReply', { commentId, userId, name })
     }
+
+    // timeFormatter(time) {
+    //   return moment(time).fromNow()
+    // }
   },
   async attached() {
     // 组件加载时通过openid获取对应用户的头像、昵称
     // let { avatarUrl, nickName } = await getBasicInfo(this.userId)
     // this.user = { avatarUrl, nickName }
     // 在回复表中查询是否有回复
-    let id = this.userId
+    let id = this.commentId
     let res = await getReply({ id })
     this.reply = res
     console.log(this.reply)
+
+    eventHub.$on('upgrade', async () => {
+      res = await getReply({ id })
+      this.reply = res
+    })
   }
 })
 </script>
 <config>
 {
   "usingComponents": {
-    "van-image": "~@/components/vant/image"
+    "van-image": "~@/components/vant/image",
+    "reply-item":"~@/components/reply-item/index"
   }
 }
 </config>

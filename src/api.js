@@ -8,11 +8,6 @@ export const dbAdd = (sheetName, data) => {
   return sheet.add({ data })
 }
 
-// export const dbSearchOpenid = (sheetName, data) => {
-//   const sheet = db.collection(sheetName)
-//   return sheet.where({ _openid: _.eq(data) }).get()
-// }
-
 export const dbSearchUser = (openid) => {
   const sheet = db.collection('users')
   return sheet.where({ _openid: _.eq(openid) }).get()
@@ -33,22 +28,25 @@ export const updateView = (id, viewNow) => {
   db.collection('goods-shelf').doc(id).update({
     // data 传入需要局部更新的数据
     data: {
-      // 表示将 done 字段置为 true
       view: viewNow + 1
     }
   })
 }
 
 // 获取首页展示的所有数据
-export const getAllGoods = () => {
-  return db.collection('goods-shelf').get()
+export const getAllGoods = async () => {
+  return await wx.cloud.callFunction({
+    name: 'getAllGoods'
+  }).then(res => {
+    return res.result
+  })
 }
 
 // 确认下单页的获取数据，需要对数据进行处理，只返回头图、简介、成色、价格、功能
 export const getPurchaseGoodsData = async (id) => {
   const sheet = db.collection('goods-shelf')
   // 用数据id换取数据
-  let res = (await sheet.doc(id).get()).data
+  let { data: res } = await sheet.doc(id).get()
   const { openid, introduction, condition, ability, price, imgList } = res
 
   let tempImg = await wx.cloud.getTempFileURL({
@@ -56,8 +54,8 @@ export const getPurchaseGoodsData = async (id) => {
   })
   let headImg = (tempImg.fileList)[0].tempFileURL
   // 利用openid换取用户数据
-  let user = (await dbSearchUser(openid)).data[0]
-  const { avatarUrl, nickName } = user
+  let { data: user } = await dbSearchUser(openid)
+  const { avatarUrl, nickName } = user[0]
   let publisherInfo = { avatarUrl, nickName }
   return { id, introduction, condition, ability, price, publisherInfo, headImg }
 }
@@ -113,6 +111,7 @@ export const getClasses = async (data) => {
   })
 }
 
+// 上传评论
 export const uploadComment = async (data, id) => {
   return await wx.cloud.callFunction({
     name: 'uploadComment',
@@ -124,6 +123,7 @@ export const uploadComment = async (data, id) => {
   })
 }
 
+// 上传回复
 export const uploadReply = async (data, id) => {
   return await wx.cloud.callFunction({
     name: 'uploadReply',
@@ -159,6 +159,26 @@ export const getBasicInfo = async (openid) => {
     data: {
       openid
     }
+  }).then(res => {
+    return res.result
+  })
+}
+
+// 获取收到的所有消息
+export const getAllNews = async (data) => {
+  return await wx.cloud.callFunction({
+    name: 'getAllNews',
+    data
+  }).then(res => {
+    return res.result
+  })
+}
+
+// 发布物品
+export const updateRead = async (data) => {
+  return await wx.cloud.callFunction({
+    name: 'updateRead',
+    data
   }).then(res => {
     return res.result
   })

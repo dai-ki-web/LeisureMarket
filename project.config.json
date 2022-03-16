@@ -49,6 +49,6 @@
   "miniprogramRoot": "weapp/",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate",
   "cloudfunctionRoot": "cloudfunctions/",
-  "libVersion": "2.14.1",
+  "libVersion": "2.22.1",
   "condition": {}
 }

@@ -1,0 +1,54 @@
+<template>
+  <view>
+    <!-- 回复 -->
+    <van-image
+      :src="item.avatarUrl"
+      width="20"
+      height="20"
+      fit="cover"
+      round
+    />
+
+    {{item.nickName}}<label v-if="item.userId!==item.reply2UserId">回复@{{item.reply2Name}}</label>:
+
+    {{item.value}}
+    |
+    {{timeFormatter}}
+    <label></label>
+
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+import moment from 'moment'
+import 'moment/locale/zh-cn'
+
+wepy.component({
+  props: {
+    item: {
+      type: Object,
+      required: true
+    },
+    time: {
+      type: Date,
+      required: true
+    }
+  },
+  data: {
+  },
+  computed: {
+    timeFormatter() {
+      console.log(this.time)
+      return moment(this.time).fromNow()
+    }
+  }
+})
+</script>
+<config>
+{
+  "usingComponents": {
+    "van-image": "~@/components/vant/image"
+  }
+}
+</config>

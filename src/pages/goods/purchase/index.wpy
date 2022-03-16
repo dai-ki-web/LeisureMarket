@@ -40,7 +40,7 @@
       </view>
       <view>
         <view class="pay-ment">
-          ￥{{payPrice}}?
+          ￥{{payPrice}}
 
         </view>
         <view style="position:relative">
@@ -48,38 +48,39 @@
             :focus="showPayment"
             type="number"
             class="hiddenPwd"
-            @input="inputPassword($event)"
+            bindinput="inputPassword"
+            adjust-position
           />
           <view class="pwd">
             <input
-              :value="pwd[0]"
+              v-model="pwd[0]"
               type="password"
               disabled
             />
             <input
-              :value="pwd[1]"
+              v-model="pwd[1]"
               type="password"
               disabled
             />
             <input
-              :value="pwd[2]"
+              v-model="pwd[2]"
               disabled
               type="password"
             />
             <input
-              :value="pwd[3]"
+              v-model="pwd[3]"
               disabled
               type="password"
             />
             <input
               disabled
-              :value="pwd[4]"
+              v-model="pwd[4]"
               type="password"
             />
 
             <input
               disabled
-              :value="pwd[5]"
+              v-model="pwd[5]"
               type="password"
             />
           </view>
@@ -131,43 +132,46 @@ wepy.page({
     }
   },
   methods: {
-    inputPassword(e) {
+    async inputPassword(e) {
       let value = e.$wx.detail.value
       let res = value.split('')
       this.pwd = res
       if (res.length === 6) {
+        this.showPayment = false
+        const toast = Toast.loading({
+          duration: 0, // 持续展示 toast
+          forbidClick: true
+        })
+        // 上传订单数据
+        let orderIds = await uploadOrder(this.dataIds, 2)
+        // 上传成功
+        if (orderIds.length == this.dataIds.length) {
+          // 提示购买成功，跳转到首页
+          toast.setData({
+            type: 'success',
+            message: '已成功下单'
+          })
+          setTimeout(() => {
+            Toast.clear()
+            // 跳转到首页
+            wx.switchTab({
+              url: '/pages/index/index'
+            })
+          }, 3000)
+        }
+
         wx.hideKeyboard() // 收起键盘
+
         // 上传订单数据
         uploadOrder(this.dataIds)
         // 跳转到订单页
       }
     },
     async onSubmit() {
-      // this.showPayment = true
+      this.showPayment = true
 
       // 开发用
       // Toast.loading()
-      const toast = Toast.loading({
-        duration: 0, // 持续展示 toast
-        forbidClick: true
-      })
-      // 上传订单数据
-      let orderIds = await uploadOrder(this.dataIds, 2)
-      // 上传成功
-      if (orderIds.length == this.dataIds.length) {
-        // 提示购买成功，跳转到首页
-        toast.setData({
-          type: 'success',
-          message: '已成功下单'
-        })
-        setTimeout(() => {
-          Toast.clear()
-          // 跳转到首页
-          wx.switchTab({
-            url: '/pages/index/index'
-          })
-        }, 3000)
-      }
     }
   },
   onLoad(option) {
@@ -215,7 +219,7 @@ wepy.page({
   left: 1em;
   display: none;
   width: 90%;
-  background-color: pink;
+  background-color: transparent;
 }
 .pwd {
   margin: 0 1em;

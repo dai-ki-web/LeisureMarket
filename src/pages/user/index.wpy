@@ -4,9 +4,18 @@
       title="我的"
       isTab
     />
+    <view class="test">
+      <van-image
+        :src="userInfo.avatarUrl"
+        width="200"
+        height="200"
+        round
+      ></van-image>
 
-    {{userInfo.avatarUrl}}
-    {{userInfo.nickName}}
+      <view class="text">{{userInfo.nickName}}</view>
+
+    </view>
+
   </view>
 </template>
 
@@ -18,14 +27,15 @@ import globalData from '@/globalData.js'
 wepy.page({
   data: {
     userInfo: {
-      avatarUrl: '111',
-      nickName: '222'
+      avatarUrl: '',
+      nickName: ''
     }
   },
   methods: {},
   async onShow() {
     let userInfoSession = await globalData.userInfo()
-    if (userInfoSession === undefined) {
+    console.log(userInfoSession)
+    if (userInfoSession === null) {
       console.log('???')
       // 对应的情况是新用户 | 旧用户本地缓存被清除
       // 检查openid是否存在在数据库中
@@ -77,8 +87,23 @@ wepy.page({
 <config>
 {
   usingComponents:{
-    "navBar":"~@/components/navBar/index"
+    "navBar":"~@/components/navBar/index",
+    "van-image": "~@/components/vant/image",
+
     
   }
 }
 </config>
+
+<style lang="less" scoped>
+.test {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .text {
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+</style>

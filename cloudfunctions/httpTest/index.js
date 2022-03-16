@@ -7,17 +7,10 @@ cloud.init({
 const db = cloud.database()
 const _ = db.command
 const $ = db.command.aggregate
-
 // 云函数入口函数
+// 根据分类搜索数据库 返回id，成色、功能、价格、用户头像名称、简介、头图
 exports.main = async (event, context) => {
-  let { id } = event
-  const sheet = db.collection('comments')
-
-  let res = await sheet.where({
-    goodId: _.eq(id)
-  }).get()
-
-  console.log(res.data)
-
+  const sheet = db.collection('goods-shelf')
+  let res = await sheet.get()
   return res.data
 }

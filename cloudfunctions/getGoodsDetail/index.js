@@ -29,15 +29,15 @@ exports.main = async (event, context) => {
   })
 
   // 换图片的临时链接
-  let tempUrls = await cloud.getTempFileURL({
-    fileList: tempImgs
-  }).then((res) => {
-    return res.fileList
-  })
+  // let tempUrls = await cloud.getTempFileURL({
+  //   fileList: tempImgs
+  // }).then((res) => {
+  //   return res.fileList
+  // })
 
-  let tempImgList = tempUrls.map(item => {
-    return item.tempFileURL
-  })
+  // let tempImgList = tempUrls.map(item => {
+  //   return item.tempFileURL
+  // })
 
-  return { goods: { introduction, tempImgList, price, view, condition, ability, timeStamp }, publisher: { avatarUrl, nickName } }
+  return { goods: { introduction, tempImgs, price, view, condition, ability, timeStamp }, publisher: { avatarUrl, nickName, userId: _openid } }
 }

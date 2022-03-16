@@ -232,13 +232,15 @@ wepy.component({
           .then(data => {
             // Toast.success('上传成功')
             data.forEach(item => this.form.imgList.push({ url: item.fileID }))
+            let headImg = this.form.imgList[0]
             goods.add({
               data: {
                 ...this.form,
-                timeStamp,
+                createTime: timeStamp,
                 productId,
                 view: 0,
-                status: 0
+                status: 0,
+                headImg
               },
               success: res => {
                 wx.redirectTo({

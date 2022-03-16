@@ -2,11 +2,13 @@
   <view>
     <navBar title="登录" />
 
-    <van-button
-      type="default"
-      open-type="getUserInfo"
-      bindgetuserinfo="onLogin"
-    >一键登录</van-button>
+    <view class="test">
+      <van-button
+        type="default"
+        open-type="getUserInfo"
+        bindgetuserinfo="onLogin"
+      >一键登录</van-button>
+    </view>
   </view>
 </template>
 
@@ -61,3 +63,13 @@ wepy.page({
   }
 }
 </config>
+
+<style lang="less" scoped>
+.test {
+  margin: 250px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+</style>

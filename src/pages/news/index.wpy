@@ -1,20 +1,198 @@
 <template>
   <view>
-    <navBar title="消息箱"></navBar>
+    <navBar
+      title="消息箱"
+      isTab
+    ></navBar>
 
+    <van-collapse
+      accordion
+      value="{{ activeName }}"
+      @change="onChange"
+      :border="false"
+    >
+      <van-cell-group>
+        <van-collapse-item
+          v-for="(item,index) in newsList"
+          :key="index"
+          :name="index"
+          :is-link="false"
+        >
+          <van-cell
+            slot="title"
+            :border="false"
+          >
+            <!-- 头像 -->
+            <view
+              slot="title"
+              class="user"
+            >
+              <!-- 发信人 -->
+              <van-image
+                width="50"
+                height="50"
+                round
+                :src="item.avatarUrl"
+                @tap.stop="toUser(item.userId)"
+              ></van-image>
+            </view>
+            <view
+              class="text"
+              @tap.capture="haveRead(item._id,item.root)"
+            >
+              <view @tap="toReply(item._id,item.userId,item.nickName)">
+                <!-- 类型 -->
+                <view>{{item.nickName}}
+                  {{item.root? '回复':'评论'}}了你
+                  <van-tag
+                    plain
+                    type="danger"
+                    v-if="!item.haveRead"
+                  >new</van-tag>
+                </view>
+                <view>{{item.value}}</view>
+              </view>
+              <van-image
+                class="icon"
+                width="50"
+                height="50"
+                :src="item.product.headImg"
+                @tap.stop="toDetail(item.goodId)"
+              ></van-image>
+            </view>
+          </van-cell>
+
+          <view>
+            <input
+              class="input"
+              :placeholder="placeholder"
+              adjust-position
+              confirm-type="send"
+              @confirm="onSubmit(item.goodId,item.root,$event)"
+            />
+          </view>
+
+        </van-collapse-item>
+      </van-cell-group>
+    </van-collapse>
   </view>
 </template>
 
 <script>
 import wepy from '@wepy/core'
+import { getAllNews, updateRead, uploadReply } from '@/api.js'
+import globalData from '@/globalData.js'
+
 wepy.page({
-  data: {}
+  data: {
+    newsList: [],
+    activeName: -1,
+    placeholder: '',
+    replyTo: {}
+  },
+  methods: {
+    onChange(e) {
+      this.activeName = e.$wx.detail
+    },
+    // 点击商品图片去往详情页
+    toDetail(id) {
+      wx.navigateTo({
+        url: `/pages/goods/detail/index?dataId=${id}`
+      })
+    },
+    // 点击去用户主页
+    toUser(id) {
+      // console.log('user')
+    },
+    // 点击回复——出现回复框
+    toReply(reply2CommentId, reply2UserId, reply2Name) {
+      console.log('reply')
+      this.placeholder = `回复${reply2Name}`
+      this.replyTo = { reply2CommentId, reply2UserId, reply2Name }
+    },
+    async haveRead(dataId, root) {
+      let res = await updateRead({ dataId, root })
+      // console.log(res)
+    },
+    // 发送评论
+    async onSubmit(goodId, root, e) {
+      let { value } = e.$wx.detail
+      let { avatarUrl, nickName } = await globalData.userInfo()
+
+      let replyTo = this.replyTo
+      let res = await uploadReply(
+        {
+          value,
+          avatarUrl,
+          nickName,
+          ...replyTo
+        },
+        goodId
+      )
+      // 发送成功——将状态修改为已读
+      if (res) {
+        this.haveRead(goodId, root)
+      }
+    }
+  },
+  onShow() {
+    if (this.$wx && typeof this.$wx.getTabBar === 'function') {
+      const tabBar = this.$wx.getTabBar()
+      tabBar.setData({
+        active: 'news'
+      })
+    }
+  },
+  async onLoad() {
+    let { _openid } = await globalData.userInfo()
+    let res = await getAllNews({ _openid })
+    res.forEach(item => {
+      let { headImg, _id } = item.product[0]
+      item.product = { headImg: headImg.url, _id }
+    })
+    this.newsList = res
+  }
 })
 </script>
 <config>
 {
   "usingComponents": {
     "navBar":"~@/components/navBar/index",
+    "van-cell": "~@/components/vant/cell",
+    "van-cell-group": "~@/components/vant/cell-group",
+    "van-image": "~@/components/vant/image",
+    "van-tag": "~@/components/vant/tag",
+    "van-collapse": "~@/components/vant/collapse",
+    "van-collapse-item": "~@/components/vant/collapse-item"
   }
 }
 </config>
+
+<style lang="less" scoped>
+// .van-cell__title {
+//   flex: 1 !important;
+// }
+.van-cell__value {
+  flex: 4 !important;
+}
+.user {
+  display: flex;
+}
+.text {
+  display: flex;
+  text-align: left;
+  position: relative;
+  .icon {
+    position: absolute;
+    right: 0;
+  }
+}
+.input {
+  margin: 0 auto;
+  height: 17px;
+  background-color: #eee;
+  border-radius: 15px;
+  padding: 3px 10px;
+  font-size: 14px;
+}
+</style>

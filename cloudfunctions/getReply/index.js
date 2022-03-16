@@ -14,7 +14,7 @@ exports.main = async (event, context) => {
   const sheet = db.collection('reply')
 
   let res = await sheet.where({
-    replyTo: _.eq(id)
+    reply2CommentId: _.eq(id)
   }).get()
 
   return res.data

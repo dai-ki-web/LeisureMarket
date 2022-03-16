@@ -4,24 +4,31 @@
     <van-search
       value="{{ value }}"
       shape="round"
-      background="#4fc08d"
-      placeholder="请输入搜索关键词"
+      background="#fff"
+      placeholder="分类搜索"
       disabled
       @click="toSearch"
     />
-    <view style="display:flex">
+    <view class="box">
       <Card
         v-for="item in goods"
-        :image="item.imgList[0]"
+        :image="item.headImg"
         :key="item._id"
+        :proId="item._id"
         :title="item.introduction"
         :price="item.price"
+        :condition="item.condition"
+        :ability="item.ability"
         :userId="item._openid"
-        :userIcon="item.userIcon"
+        :publisher="item.publisher[0]"
       ></Card>
+
     </view>
-    <view>
-      <!-- {{this.$app.globalData.userInfo}} -->
+    <view class="end">
+      <van-divider contentPosition="center">没有更多了噢</van-divider>
+    </view>
+    <!-- 占位 -->
+    <view style="height:85px">
     </view>
 
   </view>
@@ -46,19 +53,23 @@ wepy.page({
       })
     }
   },
-  onShow() {
+  async onShow() {
     if (this.$wx && typeof this.$wx.getTabBar === 'function') {
       const tabBar = this.$wx.getTabBar()
       tabBar.setData({
         active: 'home'
       })
     }
-  },
-  async onLoad() {
+
     let res = await getAllGoods()
-    console.log(res.data)
-    this.goods = res.data
+    console.log(res)
+    this.goods = res
   }
+  // async onLoad() {
+  //   let res = await getAllGoods()
+  //   console.log(res)
+  //   this.goods = res
+  // }
 })
 </script>
 
@@ -67,8 +78,28 @@ wepy.page({
   usingComponents:{
     'Card':'~@/components/Card/index',
     'van-search':'~@/components/vant/search',
-    "navBar":"~@/components/navBar/index"
+    "navBar":"~@/components/navBar/index",
+    "van-divider": "~@/components/vant/divider"
+
 
   }
 }
 </config>
+
+<style lang="less" scoped>
+.box {
+  display: flex;
+  margin: 5px 5%;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  card {
+    flex: none;
+    box-sizing: border-box;
+    width: 50%;
+    padding: 10px;
+  }
+}
+.end {
+  margin: 5px 20px;
+}
+</style>

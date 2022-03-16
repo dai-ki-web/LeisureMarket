@@ -18,7 +18,10 @@ exports.main = async (event, context) => {
   let result = await sheet.add({
     data: {
       ...comment,
-      goodId: id
+      goodId: id,
+      createTime: db.serverDate(),
+      root: 1,
+      haveRead: 0
     }
   }).then(res => {
     return true

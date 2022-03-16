@@ -13,23 +13,29 @@
         name="home"
         icon="bag"
       >首页</van-tabbar-item>
-      <van-tabbar-item
-        name="cart"
-        icon="cart"
-      >购物车</van-tabbar-item>
+      <van-tabbar-item name="cart">购物车
+        <van-icon
+          name="cart"
+          :info="cartNum? cartNum:null"
+          slot="icon"
+        />
+        <van-icon
+          name="cart"
+          :info="cartNum? cartNum:null"
+          slot="icon-active"
+        />
+      </van-tabbar-item>
       <van-tabbar-item name="pub">
         <!-- icon="add" -->
-        <image
+        <van-icon
+          name="add"
           slot="icon"
-          src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d"
-          mode="aspectFit"
           style="width: 30px; height: 18px;position:relative;bottom:30%;transform:scale(2)"
         />
-        <image
+
+        <van-icon
+          name="add"
           slot="icon-active"
-          src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fphoto.orsoon.com%2F2019%2F07%2F23%2FJPG-190723_337%2FFgjmUxxb15_small.jpg&refer=http%3A%2F%2Fphoto.orsoon.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644145698&t=30194b8d833988030bdbef2fa72ed58d"
-          mode="aspectFit"
-          style="width: 30px; height: 18px;"
         />
         发布</van-tabbar-item>
       <van-tabbar-item
@@ -80,6 +86,7 @@
 <script>
 import wepy from '@wepy/core'
 import eventHub from '@/common/eventHub'
+import globalData from '@/globalData.js'
 import moment from 'moment'
 
 wepy.component({
@@ -103,8 +110,8 @@ wepy.component({
         text: '发布'
       },
       news: {
-        pagePath: 'pages/cart',
-        text: '购物车'
+        pagePath: 'pages/news',
+        text: '消息'
       },
       user: {
         pagePath: 'pages/user',
@@ -122,6 +129,9 @@ wepy.component({
       if (this.countDown) {
         return moment(this.countDown).format('mm:ss')
       }
+    },
+    cartNum() {
+      return globalData.cart.length
     }
   },
   methods: {
@@ -169,7 +179,8 @@ export default class CustomTabBar {
     "van-popup": "~@/components/vant/popup",
     "van-button": "~@/components/vant/button",
     "van-transition": "~@/components/vant/transition",
-    "van-count-down": "~@/components/vant/count-down"
+    "van-count-down": "~@/components/vant/count-down",
+    "van-icon": "~@/components/vant/icon"
   }
 }
 </config>

@@ -45,8 +45,9 @@
         {
           "name": "pages/goods/detail",
           "pathName": "pages/goods/detail/index",
-          "query": "dataId=bf4a0bf26214af2110c2802c6157c674",
-          "scene": null
+          "query": "dataId=5b049cc86228b8af0fe5e4e615faed21",
+          "scene": null,
+          "launchMode": "default"
         },
         {
           "name": "pages/goods/purchase",
@@ -70,6 +71,13 @@
           "name": "pages/search/detail",
           "pathName": "pages/search/detail/index",
           "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/news",
+          "pathName": "pages/news/index",
+          "query": "",
+          "launchMode": "default",
           "scene": null
         }
       ]

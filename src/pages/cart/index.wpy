@@ -19,11 +19,11 @@
         >
           <!-- title-class="cell_title"
            -->
-          <!-- <van-checkbox
+          <van-checkbox
               slot="title"
               class="checkboxes-{{ index }}"
               :name="dataIds[index]"
-            /> -->
+            />
           <van-swipe-cell
             class="swipe-cell"
             :right-width="50"
@@ -32,10 +32,10 @@
             @close="handleDelete($event)"
           >
 
-            <van-checkbox
+            <!-- <van-checkbox
               class="checkboxes-{{ index }}"
               :name="dataIds[index]"
-            />
+            /> -->
 
             <cart-card
               @click="clickItem"
