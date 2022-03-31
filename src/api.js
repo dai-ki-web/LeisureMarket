@@ -61,36 +61,22 @@ export const getPurchaseGoodsData = async (id) => {
 }
 
 // 上传订单数据
-export const uploadOrder = async (id, step) => {
-  const sheet = db.collection('orders')
-  const shelf = db.collection('goods-shelf')
-  const user = db.collection('users')
-  let timeStamp = Date.now()
+export const uploadOrder = async (datalist) => {
+  return await wx.cloud.callFunction({
+    name: 'uploadOrder',
+    data: { datalist }
+  }).then(res => {
+    return res.result
+  })
+}
 
-  // 将订单内包含的商品的状态修改为已卖出
-  let modifyTasks = id.map(item => {
-    return shelf.doc(item).update({
-      data: {
-        status: 2
-      }
-    })
+export const updateOrderStep = async (item, step) => {
+  return await wx.cloud.callFunction({
+    name: 'updateOrderStep',
+    data: { item, step }
+  }).then(res => {
+    return res.result
   })
-  Promise.all(modifyTasks)
-
-  let info = await globalData.userInfo()
-  // 数据库中添加订单数据（每一个商品生成一条）
-  let addTasks = id.map(item => {
-    return sheet.add({ data: { productId: item, step, timeStamp } })
-  })
-  let resArr = await Promise.all(addTasks).then(res => {
-    return res.map(item => { return item._id })
-  })
-  await user.doc(info._id).update({
-    data: {
-      orders: _.push(resArr)
-    }
-  })
-  return resArr
 }
 
 // 获取订单详情

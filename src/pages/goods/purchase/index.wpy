@@ -26,10 +26,12 @@
       use-title-slot
       :show="showPayment"
       :showConfirmButton="false"
+      transition="fade"
       bind:close="onClose"
       bind:getuserinfo="getUserInfo"
       width="240px"
       custom-style="border-radius:5px"
+      :closeOnClickOverlay="true"
     >
       <view
         slot="title"
@@ -44,44 +46,15 @@
 
         </view>
         <view style="position:relative">
-          <input
-            :focus="showPayment"
-            type="number"
-            class="hiddenPwd"
-            bindinput="inputPassword"
-            adjust-position
-          />
           <view class="pwd">
             <input
-              v-model="pwd[0]"
-              type="password"
-              disabled
-            />
-            <input
-              v-model="pwd[1]"
-              type="password"
-              disabled
-            />
-            <input
-              v-model="pwd[2]"
-              disabled
-              type="password"
-            />
-            <input
-              v-model="pwd[3]"
-              disabled
-              type="password"
-            />
-            <input
-              disabled
-              v-model="pwd[4]"
-              type="password"
-            />
-
-            <input
-              disabled
-              v-model="pwd[5]"
-              type="password"
+              v-for="(item,index) in pwd"
+              :key="'input'+index"
+              :focus="item.focus"
+              v-model="item.value"
+              type="number"
+              password
+              bindinput="inputPwd(index,$event)"
             />
           </view>
         </view>
@@ -96,18 +69,26 @@
 
 <script>
 import wepy from '@wepy/core'
-import { getPurchaseGoodsData, uploadOrder } from '@/api.js'
+import { getPurchaseGoodsData, uploadOrder, updateOrderStep } from '@/api.js'
 import { CONDITONS, ABILITIES } from '@/constant.js'
 import Toast from '@/components/vant/toast/toast'
 
 wepy.page({
   data: {
-    pwd: [],
+    pwd: [
+      { focus: false, value: '' },
+      { focus: false, value: '' },
+      { focus: false, value: '' },
+      { focus: false, value: '' },
+      { focus: false, value: '' },
+      { focus: false, value: '' }
+    ],
     dataIds: [],
     conditions: CONDITONS,
     abilities: ABILITIES,
     showPayment: false,
-    form: []
+    form: [],
+    orders: [] // 生成的订单
   },
   computed: {
     totalPrice() {
@@ -132,50 +113,71 @@ wepy.page({
     }
   },
   methods: {
-    async inputPassword(e) {
-      let value = e.$wx.detail.value
-      let res = value.split('')
-      this.pwd = res
-      if (res.length === 6) {
-        this.showPayment = false
-        const toast = Toast.loading({
-          duration: 0, // 持续展示 toast
-          forbidClick: true
-        })
-        // 上传订单数据
-        let orderIds = await uploadOrder(this.dataIds, 2)
-        // 上传成功
-        if (orderIds.length == this.dataIds.length) {
-          // 提示购买成功，跳转到首页
-          toast.setData({
-            type: 'success',
-            message: '已成功下单'
-          })
-          setTimeout(() => {
-            Toast.clear()
-            // 跳转到首页
-            wx.switchTab({
-              url: '/pages/index/index'
-            })
-          }, 3000)
+    inputPwd(index, e) {
+      let { keyCode } = e.$wx.detail
+      if (index < 5) {
+        let { value } = e.$wx.detail
+        if (keyCode === 8) {
+          this.$set(this.pwd[index - 1], 'focus', true)
+          this.$set(this.pwd[index], 'focus', false)
+
+          this.$set(this.pwd[index - 1], 'value', '')
+        } else {
+          this.$set(this.pwd[index], 'focus', false)
+          this.$set(this.pwd[index + 1], 'focus', true)
         }
-
+        console.log(this.pwd)
+      } else {
+        // 支付完成
+        this.$set(this.pwd[5], 'focus', false)
         wx.hideKeyboard() // 收起键盘
-
-        // 上传订单数据
-        uploadOrder(this.dataIds)
-        // 跳转到订单页
+        this.showPayment = false
+        setTimeout(() => {
+          const toast = Toast.loading({
+            duration: 0, // 持续展示 toast
+            forbidClick: true
+          })
+          // 修改订单状态
+          let modifyTasks = this.orders.map(item => {
+            return updateOrderStep(item, 2)
+          })
+          Promise.all(modifyTasks).then(res => {
+            // 提示购买成功，跳转到首页
+            toast.setData({
+              type: 'success',
+              message: '已成功下单'
+            })
+            setTimeout(() => {
+              Toast.clear()
+              // 跳转到首页
+              // 跳转到订单页
+              wx.switchTab({
+                url: '/pages/index/index'
+              })
+            }, 3000)
+          })
+        }, 500)
       }
     },
-    async onSubmit() {
-      this.showPayment = true
 
+    async onSubmit() {
+      // 跳出支付框
+      this.showPayment = true
+      this.$set(this.pwd[0], 'focus', true)
+      // 创建订单
+      let orders = await uploadOrder(this.dataIds)
+      this.orders = orders
       // 开发用
       // Toast.loading()
+    },
+    // 关闭支付窗口
+    onClose() {
+      this.showPayment = false
     }
   },
   onLoad(option) {
     this.dataIds = option.dataIds.split(',')
+    console.log(this.dataIds)
   },
   async onShow() {
     // 用dataId申请数据
@@ -215,11 +217,11 @@ wepy.page({
   border-bottom: 1px red solid;
 }
 .hiddenPwd {
-  position: absolute;
+  // position: absolute;
   left: 1em;
-  display: none;
+  // display: none;
   width: 90%;
-  background-color: transparent;
+  // background-color: transparent;
 }
 .pwd {
   margin: 0 1em;
