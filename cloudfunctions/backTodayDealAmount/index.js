@@ -13,11 +13,25 @@ const $ = db.command.aggregate
 // 返回今天交易的金额总数
 exports.main = async (event, context) => {
   let sheet = db.collection('orders')
-  // 今天0点的毫秒数
-  let last = moment().startOf('day').valueOf()
-  let res = await sheet.where({
-    timeStamp: _.gte(last)
-    // 改：改完订单接口记得修改键名
-  }).count()
-  return res.total
+  // 今天0点的date
+  let zero = moment().startOf('day')._d
+
+  let res = await sheet.aggregate().match({
+    // 用createTime从orders中寻找今天的数据——大于今天零点
+    createTime: _.gte(zero)
+  }).lookup({
+    // 通过productId联表查询goods-Shelf，返回价格
+    from: 'goods-shelf', localField: 'productId', foreignField: '_id', as: 'product'
+  }).replaceRoot({
+    newRoot: $.mergeObjects([$.arrayElemAt(['$product', 0]), '$$ROOT'])
+  }).project({
+    price: 1
+  }).group({
+    // 求总和
+    _id: null,
+    totalPrice: $.sum('$price')
+  }).end()
+  console.log(res)
+
+  return res.list.length ? res.list[0].totalPrice : 0
 }

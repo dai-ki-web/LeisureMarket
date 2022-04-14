@@ -11,7 +11,7 @@
         :src="image.url"
         alt=""
         lazy-load
-      >
+      ></van-image>
     </view>
     <!-- 标题 -->
     <view class="card_title">
@@ -45,8 +45,8 @@
           round
           lazy-load
           @tap.stop="toUser(publisher._openid)"
-        >
-          {{publisher.nickName}}
+        ></van-image>
+        {{publisher.nickName}}
       </view>
     </view>
   </view>

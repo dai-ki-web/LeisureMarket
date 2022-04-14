@@ -121,6 +121,18 @@ export const uploadReply = async (data, id) => {
   })
 }
 
+// 发布商品
+export const uploadGoods = async (data, id) => {
+  return await wx.cloud.callFunction({
+    name: 'uploadGoods',
+    data: {
+      data, id
+    }
+  }).then(res => {
+    return res.result
+  })
+}
+
 export const getGoodsComments = async (data) => {
   return await wx.cloud.callFunction({
     name: 'getGoodsComments',
@@ -160,7 +172,7 @@ export const getAllNews = async (data) => {
   })
 }
 
-// 发布物品
+// 修改消息为已读
 export const updateRead = async (data) => {
   return await wx.cloud.callFunction({
     name: 'updateRead',

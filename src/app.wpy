@@ -132,3 +132,8 @@ wepy.app({
     }
 }
 </config>
+<style lang="less">
+page {
+  // --tag-default-color: #ffae00;
+}
+</style>
