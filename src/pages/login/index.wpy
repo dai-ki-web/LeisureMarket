@@ -14,11 +14,10 @@
 
 <script>
 import wepy from '@wepy/core'
-import globalData from '@/globalData.js'
-import { dbAdd } from '@/api.js'
+import { uploadNewUser, getUserById } from '@/api.js'
 
 wepy.page({
-  data: { openid: null },
+  data: {},
   methods: {
     onLogin(e) {
       if (e.$wx.detail.errMsg.match(/ok/)) {
@@ -26,32 +25,26 @@ wepy.page({
         // 添加新用户的数据，并将数据缓存到本地
         // 获取头像、用户名信息
         const { avatarUrl, nickName } = e.$wx.detail.userInfo
-        const _openid = this.$wx.data.openid
-        dbAdd('users', { avatarUrl, nickName, auth: false }).then(res => {
-          let _id = res._id
-          wx.setStorage({
-            key: 'userInfo',
-            data: {
-              _id,
-              avatarUrl,
-              nickName,
-              _openid,
-              auth: false
-            }
-          })
-          // 跳转到用户页
-          wx.switchTab({
-            url: '/pages/user/index'
-          })
+        uploadNewUser({ avatarUrl, nickName, auth: false }).then(res => {
+          if (res) {
+            getUserById(res).then(data => {
+              console.log(data)
+              wx.setStorage({
+                key: 'userInfo',
+                data
+              })
+            })
+            // 跳转到用户页
+            wx.switchTab({
+              url: '/pages/user/index'
+            })
+          }
         })
       } else {
         // 点击拒绝，弹出toast
         wx.showToast('授权失败')
       }
     }
-  },
-  onLoad(option) {
-    this.openid = option.OPENID
   }
 })
 </script>

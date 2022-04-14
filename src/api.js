@@ -1,16 +1,23 @@
-import globalData from './globalData'
+// import globalData from './globalData'
 const db = wx.cloud.database()
-const _ = db.command
-const $ = db.command.aggregate
 
-export const dbAdd = (sheetName, data) => {
-  const sheet = db.collection(sheetName)
-  return sheet.add({ data })
+// 新用户注册
+export const uploadNewUser = async (data) => {
+  return await wx.cloud.callFunction({
+    name: 'uploadNewUser',
+    data
+  }).then(res => {
+    return res.result
+  })
 }
 
-export const dbSearchUser = (openid) => {
-  const sheet = db.collection('users')
-  return sheet.where({ _openid: _.eq(openid) }).get()
+export const getUserById = async (id) => {
+  return await wx.cloud.callFunction({
+    name: 'getUserById',
+    data: { id }
+  }).then(res => {
+    return res.result
+  })
 }
 
 // 展示详情页时通过数据id向数据库查询数据
@@ -18,6 +25,15 @@ export const getGoodsDetails = async (data) => {
   return await wx.cloud.callFunction({
     name: 'getGoodsDetail',
     data
+  }).then(res => {
+    return res.result
+  })
+}
+
+// 查询数据库中是否存在用户
+export const getLoginStatus = async () => {
+  return await wx.cloud.callFunction({
+    name: 'getLoginStatus'
   }).then(res => {
     return res.result
   })
@@ -47,15 +63,15 @@ export const getPurchaseGoodsData = async (id) => {
   const sheet = db.collection('goods-shelf')
   // 用数据id换取数据
   let { data: res } = await sheet.doc(id).get()
-  const { openid, introduction, condition, ability, price, imgList } = res
+  const { _openid, introduction, condition, ability, price, imgList } = res
 
   let tempImg = await wx.cloud.getTempFileURL({
     fileList: [imgList[0].url]
   })
   let headImg = (tempImg.fileList)[0].tempFileURL
   // 利用openid换取用户数据
-  let { data: user } = await dbSearchUser(openid)
-  const { avatarUrl, nickName } = user[0]
+  let result = await getBasicInfo(_openid)
+  const { avatarUrl, nickName } = result
   let publisherInfo = { avatarUrl, nickName }
   return { id, introduction, condition, ability, price, publisherInfo, headImg }
 }

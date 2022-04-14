@@ -136,7 +136,7 @@
 
 <script>
 import wepy from '@wepy/core'
-import { dbSearchUser } from '@/api.js'
+import { getLoginStatus } from '@/api.js'
 import globalData from '@/globalData.js'
 
 wepy.page({
@@ -160,37 +160,23 @@ wepy.page({
       console.log('???')
       // 对应的情况是新用户 | 旧用户本地缓存被清除
       // 检查openid是否存在在数据库中
-      wx.login({
-        success: res => {
-          wx.cloud.callFunction({
-            name: 'getOpenid',
-            complete: res => {
-              let { OPENID } = res.result
-              dbSearchUser(OPENID).then(res => {
-                if (res.data.length) {
-                  // 如果存在,将数据库中的数据缓存到本地
-                  let info = res.data[0]
+      let userinfo = await getLoginStatus()
+      if (userinfo) {
+        // 在视图上渲染
+        const { avatarUrl, nickName, auth } = userinfo
+        this.userInfo.avatarUrl = avatarUrl
+        this.userInfo.nickName = nickName
+        this.userInfo.auth = auth
 
-                  // 在视图上渲染
-                  const { avatarUrl, nickName, auth } = info
-                  this.userInfo.avatarUrl = avatarUrl
-                  this.userInfo.nickName = nickName
-                  this.userInfo.auth = auth
-
-                  wx.setStorage({
-                    key: 'userInfo',
-                    data: info
-                  })
-                } else {
-                  // 如果不存在——新用户，跳转登录
-                  console.log('新用户')
-                  wx.navigateTo({ url: `/pages/login/index?OPENID=${OPENID}` })
-                }
-              })
-            }
-          })
-        }
-      })
+        wx.setStorage({
+          key: 'userInfo',
+          data: userinfo
+        })
+      } else {
+        // 如果不存在——新用户，跳转登录
+        console.log('新用户')
+        wx.navigateTo({ url: '/pages/login/index' })
+      }
     } else {
       // 本地缓存有用户信息，直接读取
       const { avatarUrl, nickName } = userInfoSession
@@ -246,6 +232,7 @@ wepy.page({
       display: flex;
       flex-direction: column;
       text-align: center;
+      color: #fff;
     }
   }
 }
