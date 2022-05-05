@@ -1,0 +1,36 @@
+<template>
+  <view>
+    <navBar :title="title"></navBar>
+
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+import { getOrdersIn, getOrdersOut } from '@/api.js'
+wepy.page({
+  data: {
+    title: '',
+    list: []
+  },
+  async onLoad(option) {
+    let { mode, status } = option
+    let title = mode === '0' ? '我买到的' : '我卖出的'
+    this.title = title
+    if (mode === '0') {
+      let res = await getOrdersIn(status)
+      this.list = res
+    } else {
+      let res = await getOrdersOut(status)
+      this.list = res
+    }
+  }
+})
+</script>
+<config>
+{
+  "usingComponents": {
+    "navBar":"~@/components/navBar/index",
+  }
+}
+</config>

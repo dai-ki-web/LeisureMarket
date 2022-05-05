@@ -15,9 +15,11 @@ const $ = db.command.aggregate
 exports.main = async (event, context) => {
   const range = 7
   let clap = []
+  let res = []
   for (let i = 0;i < range;i++) {
     let date = moment().subtract(i, 'days').add(1, 'days').startOf('day').valueOf()
     clap.unshift(date)
+    res.push(0)
   }
   console.log(clap)
   const sheet = db.collection('goods-shelf')
@@ -29,6 +31,14 @@ exports.main = async (event, context) => {
       count: $.sum(1)
     }
   }).end()
-  // console.log(list)
-  return list
+
+  clap.forEach((axis, index) => {
+    list.forEach(item => {
+      if (item._id === axis) {
+        res[index] = item.count
+      }
+    })
+  })
+  // console.log(res)
+  return res
 }

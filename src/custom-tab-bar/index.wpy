@@ -51,7 +51,7 @@
     <!-- 倒计时 -->
     <view
       class="countDown"
-      v-if="countDown!=0"
+      v-if="countDownShow"
     >
       {{countDownFormatter}}
     </view>
@@ -72,7 +72,7 @@
       >
         <view>
           <van-button
-            type="primary"
+            type="info"
             block
             @tap="toPub"
           >出物</van-button>
@@ -93,6 +93,7 @@ wepy.component({
   data: {
     show: false,
     countDown: 0,
+    countDownShow: false,
     active: 'home',
     color: '#7A7783',
     selectedColor: '#6280f5',
@@ -122,6 +123,10 @@ wepy.component({
   attached() {
     eventHub.$on('updateCountDown', time => {
       this.countDown = time
+      this.countDownShow = true
+    })
+    eventHub.$on('endCountDown', time => {
+      this.countDownShow = false
     })
   },
   computed: {
@@ -179,7 +184,6 @@ export default class CustomTabBar {
     "van-popup": "~@/components/vant/popup",
     "van-button": "~@/components/vant/button",
     "van-transition": "~@/components/vant/transition",
-    "van-count-down": "~@/components/vant/count-down",
     "van-icon": "~@/components/vant/icon"
   }
 }

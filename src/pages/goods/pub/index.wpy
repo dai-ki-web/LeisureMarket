@@ -10,6 +10,8 @@
         @change="introductionChange($event)"
         placeholder="简单介绍一下..."
         :border="true"
+        maxlength="400"
+        show-word-limit
       >
       </van-field>
 
@@ -216,12 +218,12 @@ wepy.component({
     async handleSubmit() {
       if (!this.pubDisable) {
         let goods = wx.cloud.database().collection('goods-shelf')
-        const { _openid } = await globalData.userInfo()
+        const { _id } = await globalData.userInfo()
         const timeStamp = Date.now()
 
         // 上传图片
         // 根据openid和时间戳生成物品id
-        const productId = randProductId(_openid, timeStamp)
+        const productId = randProductId(_id, timeStamp)
         let uploadTasks = this.imgList.map((item, index) =>
           this.uploadFilePromise(
             `${productId}-photo${index}.${item.url.split('.')[1]}`,

@@ -34,7 +34,9 @@
       style="display:flex;"
       class="card_footer"
     >
-      <view class="card_price">￥{{priceFomatter}}</view>
+      <view class="card_price">
+        {{priceFomatter}}
+      </view>
 
       <view class="card_icon">
         <van-image
@@ -46,7 +48,6 @@
           lazy-load
           @tap.stop="toUser(publisher._openid)"
         ></van-image>
-        {{publisher.nickName}}
       </view>
     </view>
   </view>
@@ -94,7 +95,6 @@ wepy.component({
 <config>
 {
   usingComponents:{
-    'van-card':"~@/components/vant/card",
     "van-image": "~@/components/vant/image",
     "van-tag": "~@/components/vant/tag",
 
@@ -116,6 +116,16 @@ wepy.component({
     height: 30px;
     .card_price {
       width: 70%;
+      font-size: 18px;
+      color: #ffae00;
+      font-weight: 600;
+      line-height: 30px;
+    }
+    .card_price::before {
+      content: '￥';
+      font-size: 14px;
+      color: #aaaaaa;
+      font-weight: 400;
     }
     .card_icon {
       width: 20%;

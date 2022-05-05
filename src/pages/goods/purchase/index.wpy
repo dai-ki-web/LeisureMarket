@@ -14,7 +14,7 @@
     </van-cell-group>
     <van-submit-bar
       :price="totalPrice"
-      button-text="提交订单"
+      button-text="确认订单"
       @submit="onSubmit"
       custom-class="submit_bar"
       bar-class="submit_body"
@@ -150,7 +150,6 @@ wepy.page({
             setTimeout(() => {
               Toast.clear()
               // 跳转到首页
-              // 跳转到订单页
               wx.switchTab({
                 url: '/pages/index/index'
               })

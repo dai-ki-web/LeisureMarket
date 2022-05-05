@@ -9,12 +9,14 @@
         bindgetuserinfo="onLogin"
       >一键登录</van-button>
     </view>
+    <van-toast id="van-toast" />
   </view>
 </template>
 
 <script>
 import wepy from '@wepy/core'
-import { uploadNewUser, getUserById } from '@/api.js'
+import { uploadNewUser } from '@/api.js'
+import Toast from '@/components/vant/toast/toast'
 
 wepy.page({
   data: {},
@@ -25,14 +27,11 @@ wepy.page({
         // 添加新用户的数据，并将数据缓存到本地
         // 获取头像、用户名信息
         const { avatarUrl, nickName } = e.$wx.detail.userInfo
-        uploadNewUser({ avatarUrl, nickName, auth: false }).then(res => {
+        uploadNewUser({ avatarUrl, nickName }).then(res => {
           if (res) {
-            getUserById(res).then(data => {
-              console.log(data)
-              wx.setStorage({
-                key: 'userInfo',
-                data
-              })
+            wx.setStorage({
+              key: 'userInfo',
+              data: res
             })
             // 跳转到用户页
             wx.switchTab({
@@ -42,7 +41,7 @@ wepy.page({
         })
       } else {
         // 点击拒绝，弹出toast
-        wx.showToast('授权失败')
+        Toast.fail('授权失败')
       }
     }
   }
@@ -52,7 +51,8 @@ wepy.page({
 {
   usingComponents:{
     "van-button": "~@/components/vant/button",
-    "navBar":"~@/components/navBar/index"
+    "navBar":"~@/components/navBar/index",
+    "van-toast": "~@/components/vant/toast"
 
   }
 }

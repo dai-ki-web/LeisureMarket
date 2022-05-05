@@ -16,7 +16,7 @@ function sortBy(field) {
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  let { _openid: user } = event
+  let { OPENID: user } = cloud.getWXContext()
 
   // 查找评论
   const comSheet = db.collection('comments')

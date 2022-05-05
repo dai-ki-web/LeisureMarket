@@ -1,5 +1,5 @@
-export const randProductId = (openid, timeStamp) => {
-  let id = openid.split('')
+export const randProductId = (_id, timeStamp) => {
+  let id = _id.split('')
   let time = timeStamp.toString().split('')
   let res = ''
   for (let i = 0;i < id.length;i++) {

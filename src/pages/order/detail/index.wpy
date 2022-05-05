@@ -1,22 +1,109 @@
 <template>
-  <view>
+  <view class="body">
     <navBar title="订单详情"></navBar>
     {{orderId}}
+    <view class="timeline">
+      <van-steps
+        :steps="steps"
+        :active="info.step-1"
+        active-color="#ffae00"
+      />
+    </view>
+
+    <view class="info">
+      <van-cell-group>
+        <van-cell use-label-slot>
+          <view
+            slot="label"
+            class="goods"
+          >
+            <van-image
+              width="8em"
+              height="8em"
+              fit="cover"
+              :src="info.headImg.url"
+            />
+
+            <view class="text">
+              <view class="introduction">
+                {{info.introduction}}
+              </view>
+
+              <view class="price">
+                {{info.price/100}}
+              </view>
+            </view>
+        </van-cell>
+        <van-cell use-label-slot>
+          <view slot="title">
+            <view class="title">订单信息</view>
+          </view>
+          <view
+            slot="label"
+            class="order"
+          >
+            <view v-if="mode">卖家昵称: {{info.nickName}}</view>
+            <view v-else>买家昵称: {{info.nickName}}</view>
+            <view>订单编号: {{info.orderId}}</view>
+            <view>交易时间: {{timeFormatter}}</view>
+
+          </view>
+        </van-cell>
+      </van-cell-group>
+    </view>
+
   </view>
 </template>
 
 <script>
 import wepy from '@wepy/core'
+import moment from 'moment'
 import { getOrderDetails } from '@/api.js'
 
 wepy.page({
-  data: { orderId: '' },
-  onLoad(option) {
-    this.orderId = option.orderId
+  data: {
+    info: {
+      avatarUrl: '',
+      buyerId: '',
+      createTime: null,
+      headImg: {},
+      introduction: '',
+      nickName: '',
+      orderId: '',
+      price: 0,
+      productId: '',
+      step: 0,
+      _openid: ''
+    },
+    mode: 0, // 订单类型   0：买到的|1：卖出的
+
+    steps: [
+      {
+        text: '未付款'
+      },
+      {
+        text: '已付款'
+      },
+      {
+        text: '已完成'
+      }
+    ]
   },
-  async onShow() {
+  computed: {
+    timeFormatter() {
+      return moment(this.info.createTime).format('yyyy-MM-DD hh:mm:ss')
+    }
+  },
+  async onLoad(option) {
+    let mode = option.mode
+    let info = await getOrderDetails(option.orderId, mode)
+
+    console.log(info)
+    this.mode = mode
+    this.info = info
+  },
+  onShow() {
     // 获取订单信息
-    getOrderDetails(this.orderId)
   }
 })
 </script>
@@ -24,6 +111,62 @@ wepy.page({
 {
   "usingComponents": {
     "navBar":"~@/components/navBar/index",
+    "van-steps": "~@/components/vant/steps/index",
+    "van-image": "~@/components/vant/image/index",
+    "van-cell": "~@/components/vant/cell/index",
+    "van-cell-group": "~@/components/vant/cell-group/index"
   }
 }
 </config>
+
+<style lang="less" scoped>
+.body {
+  background-color: #eeeeee;
+  height: 100vh;
+  .timeline {
+    background-color: #fff;
+    margin-bottom: 5px;
+    .van-steps {
+      margin: 0 20px;
+    }
+  }
+  .info {
+    .goods {
+      display: flex;
+      .text {
+        position: relative;
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        margin-left: 30px;
+        .introduction {
+          font-size: 16px;
+        }
+        .price {
+          position: absolute;
+          bottom: 10px;
+          right: 10px;
+          &::before {
+            content: '￥';
+            font-size: 14px;
+          }
+          text-align: right;
+          font-size: 20px;
+        }
+      }
+    }
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .order {
+      font-size: 14px;
+      view {
+        margin-bottom: 5px;
+      }
+    }
+  }
+}
+</style>

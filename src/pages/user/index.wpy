@@ -12,16 +12,15 @@
         height="100"
         round
       ></van-image>
-
       <view class="name">{{userInfo.nickName}}</view>
       <van-tag
-        :type="auth? 'success':'danger'"
+        :type="userAuth? 'success':'danger'"
         :click="toVerify"
-      >{{auth? '已认证':'未认证'}}</van-tag>
+      >{{userAuth? '已认证':'未认证'}}</van-tag>
     </view>
 
     <!-- 交易 -->
-    <view>
+    <view v-if="userAuth? true:false">
       <van-cell-group inset>
         <van-cell
           title="我发布的"
@@ -31,13 +30,13 @@
             slot="label"
             class="slot_label"
           >
-            <view class="block">
+            <!-- <view class="block">
               <van-icon
                 name="records"
                 size="3em"
               />
               草稿箱
-            </view>
+            </view> -->
             <view class="block">
               <van-icon
                 name="orders-o"
@@ -64,27 +63,33 @@
             slot="label"
             class="slot_label"
           >
-            <view class="block">
+            <view
+              class="block"
+              @click="checkOut('ing')"
+            >
               <van-icon
                 name="bill-o"
                 size="3em"
               />
               进行中
             </view>
-            <view class="block">
+            <view
+              class="block"
+              @click="checkOut('finished')"
+            >
               <van-icon
                 name="completed"
                 size="3em"
               />
               已完成
             </view>
-            <view class="block">
+            <!-- <view class="block">
               <van-icon
                 name="failure"
                 size="3em"
               />
               已关闭
-            </view>
+            </view> -->
           </view>
 
         </van-cell>
@@ -98,37 +103,60 @@
             slot="label"
             class="slot_label"
           >
-            <view class="block">
+            <view
+              class="block"
+              @click="checkIn('unpaid')"
+            >
               <van-icon
                 name="paid"
                 size="3em"
               />
               未付款
             </view>
-            <view class="block">
+            <view
+              class="block"
+              @click="checkIn('ing')"
+            >
               <van-icon
                 name="tosend"
                 size="3em"
               />
               进行中
             </view>
-            <view class="block">
+            <view
+              class="block"
+              @click="checkIn('finished')"
+            >
               <van-icon
                 name="sign"
                 size="3em"
               />
               已完成
             </view>
-            <view class="block">
+            <!-- <view class="block">
               <van-icon
                 name="shield-o"
                 size="3em"
               />
               退款/售后
-            </view>
+            </view> -->
           </view>
         </van-cell>
       </van-cell-group>
+    </view>
+    <view
+      v-else
+      style="margin:0 20px"
+    >
+      <view class="empty">
+        <van-icon
+          name="lock"
+          size="10em"
+          color="#e3e3e3"
+        />
+      </view>
+      <van-divider contentPosition="center">身份认证通过以后才能使用更多功能噢</van-divider>
+
     </view>
 
   </view>
@@ -136,21 +164,39 @@
 
 <script>
 import wepy from '@wepy/core'
-import { getLoginStatus } from '@/api.js'
+import { getLoginStatus, getAuthStatus } from '@/api.js'
 import globalData from '@/globalData.js'
 
 wepy.page({
   data: {
     userInfo: {
       avatarUrl: '',
-      nickName: '',
-      auth: false
-    }
+      nickName: ''
+    },
+    userAuth: null
   },
   methods: {
     // 去认证页
     toVerify() {
       wx.navigateTo({ url: '' })
+    },
+    // 我卖出的
+    checkOut(status) {
+      // status  0：进行中|1：已完成
+      wx.navigateTo({
+        url: `/pages/order/class/index?mode=1&status=${status}`
+      })
+    },
+    // 我买到的
+    checkIn(status) {
+      // status  0：进行中|1：已完成
+      if (status === 'unpaid') {
+        wx.navigateTo({ url: `/pages/order/class/index?mode=0&status=1` })
+      } else if (status === 'ing') {
+        wx.navigateTo({ url: `/pages/order/class/index?mode=0&status=2` })
+      } else {
+        wx.navigateTo({ url: `/pages/order/class/index?mode=0&status=3` })
+      }
     }
   },
   async onShow() {
@@ -161,16 +207,20 @@ wepy.page({
       // 对应的情况是新用户 | 旧用户本地缓存被清除
       // 检查openid是否存在在数据库中
       let userinfo = await getLoginStatus()
-      if (userinfo) {
+      if (Object.keys(userinfo).length) {
         // 在视图上渲染
-        const { avatarUrl, nickName, auth } = userinfo
+        const { avatarUrl, nickName, _id, auth } = userinfo
         this.userInfo.avatarUrl = avatarUrl
         this.userInfo.nickName = nickName
-        this.userInfo.auth = auth
+        this.userAuth = auth
 
         wx.setStorage({
           key: 'userInfo',
-          data: userinfo
+          data: { avatarUrl, nickName, _id }
+        })
+        wx.setStorage({
+          key: 'userAuth',
+          data: auth
         })
       } else {
         // 如果不存在——新用户，跳转登录
@@ -182,6 +232,24 @@ wepy.page({
       const { avatarUrl, nickName } = userInfoSession
       this.userInfo.avatarUrl = avatarUrl
       this.userInfo.nickName = nickName
+
+      // 检查用户的认证状态
+      // 如果本地是false，向数据库申请检查数据是否变化
+      let userAuthSession = await globalData.userAuth()
+
+      if (!userAuthSession) {
+        let res = await getAuthStatus()
+        if (res) {
+          wx.setStorage({
+            key: 'userAuth',
+            data: res
+          })
+          this.userAuth = res
+        } else {
+          this.userAuth = userAuthSession
+        }
+      }
+      this.userAuth = userAuthSession
     }
     if (this.$wx && typeof this.$wx.getTabBar === 'function') {
       const tabBar = this.$wx.getTabBar()
@@ -200,7 +268,8 @@ wepy.page({
     "van-tag": "~@/components/vant/tag",
     "van-cell": "~@/components/vant/cell",
     "van-cell-group": "~@/components/vant/cell-group",
-    "van-icon": "~@/components/vant/icon"
+    "van-icon": "~@/components/vant/icon",
+    "van-divider": "~@/components/vant/divider"
     
   }
 }
@@ -238,5 +307,12 @@ wepy.page({
 }
 .van-cell-group {
   margin: 10px 5% !important;
+}
+.empty {
+  display: flex;
+  justify-content: center;
+  .van-icon {
+    display: block;
+  }
 }
 </style>

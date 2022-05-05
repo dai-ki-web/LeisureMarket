@@ -1,14 +1,16 @@
 <template>
   <view :id="id">
     <navBar isTab />
-    <van-search
-      value="{{ value }}"
-      shape="round"
-      background="#fff"
-      placeholder="分类搜索"
-      disabled
-      @click="toSearch"
-    />
+    <van-sticky offset-top="90">
+      <van-search
+        value="分类搜索"
+        shape="round"
+        background="#fff"
+        disabled
+        @click="toSearch"
+      />
+    </van-sticky>
+
     <view class="box">
       <Card
         v-for="item in goods"
@@ -79,7 +81,8 @@ wepy.page({
     'Card':'~@/components/Card/index',
     'van-search':'~@/components/vant/search',
     "navBar":"~@/components/navBar/index",
-    "van-divider": "~@/components/vant/divider"
+    "van-divider": "~@/components/vant/divider",
+     "van-sticky": "~@/components/vant/sticky"
 
 
   }

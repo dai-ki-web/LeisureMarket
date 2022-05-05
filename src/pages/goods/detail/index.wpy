@@ -243,7 +243,9 @@ wepy.page({
     eventHub.$on('updateCountDown', time => {
       this.countDown = time
     })
-
+    eventHub.$on('endCountDown', time => {
+      this.countDown = '0'
+    })
     // 监听楼中回复
     eventHub.$on('replyToReply', res => {
       let { commentId, userId, name } = res
@@ -281,7 +283,6 @@ wepy.page({
     "van-goods-action-icon": "~@/components/vant/goods-action-icon",
     "van-goods-action-button": "~@/components/vant/goods-action-button",
     "navBar":"~@/components/navBar/index",
-    "van-count-down": "~@/components/vant/count-down",
     "van-popup": "~@/components/vant/popup",
     "van-field": "~@/components/vant/field",
     "van-empty": "~@/components/vant/empty",

@@ -39,6 +39,15 @@ export const getLoginStatus = async () => {
   })
 }
 
+// 查询数据库中是否存在用户
+export const getAuthStatus = async () => {
+  return await wx.cloud.callFunction({
+    name: 'getAuthStatus'
+  }).then(res => {
+    return res.result
+  })
+}
+
 // 更新浏览量数据
 export const updateView = (id, viewNow) => {
   db.collection('goods-shelf').doc(id).update({
@@ -96,11 +105,13 @@ export const updateOrderStep = async (item, step) => {
 }
 
 // 获取订单详情
-export const getOrderDetails = async (id) => {
-  const sheet = db.collection('orders')
-  // 用数据id换取数据
-  let res = (await sheet.doc(id).get()).data
-  console.log(res)
+export const getOrderDetails = async (id, mode) => {
+  return await wx.cloud.callFunction({
+    name: 'getOrderDetails',
+    data: { id, mode }
+  }).then(res => {
+    return res.result
+  })
 }
 
 // 根据分类搜索数据库 返回id，成色、功能、价格、用户头像名称、简介、头图
@@ -179,10 +190,9 @@ export const getBasicInfo = async (openid) => {
 }
 
 // 获取收到的所有消息
-export const getAllNews = async (data) => {
+export const getAllNews = async () => {
   return await wx.cloud.callFunction({
-    name: 'getAllNews',
-    data
+    name: 'getAllNews'
   }).then(res => {
     return res.result
   })
@@ -193,6 +203,26 @@ export const updateRead = async (data) => {
   return await wx.cloud.callFunction({
     name: 'updateRead',
     data
+  }).then(res => {
+    return res.result
+  })
+}
+
+// 获取我卖出的相关订单
+export const getOrdersOut = async (status) => {
+  return await wx.cloud.callFunction({
+    name: 'getOrdersOut',
+    data: { status }
+  }).then(res => {
+    return res.result
+  })
+}
+
+// 获取我买到的相关订单
+export const getOrdersIn = async (status) => {
+  return await wx.cloud.callFunction({
+    name: 'getOrdersIn',
+    data: { status }
   }).then(res => {
     return res.result
   })

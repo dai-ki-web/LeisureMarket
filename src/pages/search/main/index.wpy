@@ -3,7 +3,7 @@
     <navBar title="分类搜索"></navBar>
     <van-tree-select
       :items="category"
-      height="100vw"
+      height="100vh"
       :main-active-index="navIndex "
       :active-id="activeId"
       @click-nav="onClickNav($event)"
@@ -31,6 +31,7 @@ wepy.page({
       let { id } = e.$wx.detail
       let navClass = this.category[this.navIndex].text
       let res = `${navClass},${CATEGORIES[navClass][id]}`
+      console.log(res)
       wx.navigateTo({
         url: `/pages/search/detail/index?category=${res}`
       })

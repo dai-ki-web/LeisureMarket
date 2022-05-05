@@ -144,8 +144,7 @@ wepy.page({
     }
   },
   async onLoad() {
-    let { _openid } = await globalData.userInfo()
-    let res = await getAllNews({ _openid })
+    let res = await getAllNews()
     res.forEach(item => {
       let { headImg, _id } = item.product[0]
       item.product = { headImg: headImg.url, _id }
