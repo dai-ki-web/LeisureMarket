@@ -40,8 +40,7 @@ exports.main = async (event, context) => {
         _.expr($.eq(['$_openid', '$$openid']))
       ).project({
         _id: false,
-        nickName: true,
-        avatarUrl: true
+        nickName: true
       }).done(),
       as: 'puber'
     }).replaceRoot({

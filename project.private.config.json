@@ -71,6 +71,20 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "",
+          "pathName": "pages/order/class/index",
+          "query": "mode=0&status=1",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "",
+          "pathName": "pages/verify/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

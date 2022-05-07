@@ -288,7 +288,7 @@ wepy.page({
   }
 }
 .van-cell {
-  background-color: #ffae00 !important;
+  background-color: rgba(255, 174, 0, 0.6) !important;
   .van-cell__title {
     font-weight: 600;
     font-size: 16px;

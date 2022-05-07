@@ -2,27 +2,137 @@
   <view>
     <navBar :title="title"></navBar>
 
+    <van-tabbar
+      :active="status"
+      :fixed="false"
+      :safe-area-inset-bottom="false"
+      active-color="#ffae00"
+      @change="handleChange"
+    >
+      <van-tabbar-item>全部</van-tabbar-item>
+      <van-tabbar-item v-if="mode===0">未付款</van-tabbar-item>
+      <van-tabbar-item>进行中</van-tabbar-item>
+      <van-tabbar-item>已完成</van-tabbar-item>
+
+    </van-tabbar>
+    <view>
+      <view
+        class="content"
+        v-if="loading"
+      >
+        <van-loading
+          size="24px"
+          vertical
+          class="loading"
+        >加载中...</van-loading>
+      </view>
+
+      <van-cell-group v-else>
+        <van-cell
+          use-label-slot
+          v-for="(item,index) in list"
+          :key="index"
+        >
+          <view
+            slot="title"
+            class="title"
+          >
+            <view class="user-info">
+              <van-image
+                round
+                width="2em"
+                height="2em"
+                :src="item.avatarUrl"
+              />
+              <view>{{item.nickName}}</view>
+            </view>
+
+            <view class="status">{{steps[item.step]}}</view>
+          </view>
+          <view slot="label">
+            <view class="label">
+              <van-image
+                width="5em"
+                height="5em"
+                fit="cover"
+                :src="item.headImg.url"
+              />
+              <view class="text">
+                <view class="introduction">
+                  {{item.introduction}}
+                </view>
+
+                <view class="price">
+                  {{item.price/100}}
+                </view>
+              </view>
+            </view>
+            <view class="button">
+              <van-button
+                round
+                type="default"
+                v-if="item.step===1"
+                size="small"
+              >{{mode===0? '去付款':'取消订单'}}</van-button>
+              <van-button
+                round
+                v-else-if="item.step===2"
+                type="default"
+                size="small"
+              >确认完成</van-button>
+            </view>
+          </view>
+
+        </van-cell>
+      </van-cell-group>
+    </view>
+
   </view>
 </template>
 
 <script>
 import wepy from '@wepy/core'
 import { getOrdersIn, getOrdersOut } from '@/api.js'
+import { STEPS } from '@/constant.js'
+
 wepy.page({
   data: {
     title: '',
-    list: []
+    list: [],
+    status: 1,
+    steps: STEPS,
+    loading: false
+  },
+  methods: {
+    handleChange(e) {
+      let n_status = e.$wx.detail
+      this.status = n_status
+      this.loading = true
+      let task = this.mode ? getOrdersIn(n_status) : getOrdersOut(n_status)
+      console.log(task)
+      task.then(res => {
+        this.loading = false
+        this.list = res
+      })
+    }
   },
   async onLoad(option) {
     let { mode, status } = option
     let title = mode === '0' ? '我买到的' : '我卖出的'
     this.title = title
+    this.loading = true
     if (mode === '0') {
-      let res = await getOrdersIn(status)
-      this.list = res
+      this.status = parseInt(status)
+      getOrdersIn(status).then(res => {
+        this.loading = false
+        this.list = res
+      })
     } else {
-      let res = await getOrdersOut(status)
-      this.list = res
+      this.status = status === 'ing' ? 1 : 2
+      getOrdersOut(this.status).then(res => {
+        this.loading = false
+        this.list = res
+      })
     }
   }
 })
@@ -31,6 +141,67 @@ wepy.page({
 {
   "usingComponents": {
     "navBar":"~@/components/navBar/index",
+    "van-cell": "~@/components/vant/cell/index",
+    "van-cell-group": "~@/components/vant/cell-group/index",
+    "van-image": "~@/components/vant/image/index",
+    "van-tabbar": "~@/components/vant/tabbar/index",
+    "van-tabbar-item": "~@/components/vant/tabbar-item/index",
+    "van-loading": "~@/components/vant/loading/index",
+    "van-button": "~@/components/vant/button/index"
   }
 }
 </config>
+<style lang="less" scoped>
+.label {
+  margin-top: 10px;
+  display: flex;
+  position: relative;
+  .text {
+    // flex: 2;
+    text-align: left;
+    margin-left: 10px;
+    .introduction {
+      font-size: 16px;
+    }
+    .price {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      &::before {
+        content: '￥';
+        font-size: 14px;
+      }
+      text-align: right;
+      font-size: 20px;
+    }
+  }
+}
+.button {
+  text-align: right;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .user-info {
+    display: flex;
+    align-items: center;
+    .van-image {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+    }
+  }
+  .status {
+    color: #ffae00;
+  }
+}
+.content {
+  display: flex;
+  align-items: center;
+  .loading {
+    margin: 20px auto;
+  }
+}
+</style>

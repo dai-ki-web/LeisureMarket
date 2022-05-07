@@ -96,7 +96,7 @@ wepy.component({
     countDownShow: false,
     active: 'home',
     color: '#7A7783',
-    selectedColor: '#6280f5',
+    selectedColor: '#ffae00',
     tabbar: {
       home: {
         pagePath: 'pages/index',

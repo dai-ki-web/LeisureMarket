@@ -93,6 +93,7 @@ wepy.app({
       'pages/order/detail/index',
       'pages/order/class/index',
       'pages/goods/purchase/index',
+      'pages/verify/index',
 
       
     ],

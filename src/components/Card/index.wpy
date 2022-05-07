@@ -3,6 +3,7 @@
     class="card-box"
     @tap="toDetail"
   >
+
     <!-- 图片部分 -->
     <view class="card_header">
       <van-image
@@ -13,43 +14,49 @@
         lazy-load
       ></van-image>
     </view>
-    <!-- 标题 -->
-    <view class="card_title">
-      {{title}}
-    </view>
-    <!-- tag -->
-    <view class="tag">
-      <van-tag
-        plain
-        type="primary"
-      >{{conditions[condition]}}
-      </van-tag>
-      <van-tag
-        plain
-        type="primary"
-      >{{abilities[ability]}}</van-tag>
-    </view>
-    <!-- 价格和头像 -->
-    <view
-      style="display:flex;"
-      class="card_footer"
+    <van-skeleton
+      row="2"
+      :row-width="['100%','50%']"
+      :loading="loading"
     >
-      <view class="card_price">
-        {{priceFomatter}}
+      <!-- 标题 -->
+      <view class="card_title">
+        {{title}}
       </view>
+      <!-- tag -->
+      <view class="tag">
+        <van-tag
+          plain
+          type="primary"
+        >{{conditions[condition]}}
+        </van-tag>
+        <van-tag
+          plain
+          type="primary"
+        >{{abilities[ability]}}</van-tag>
+      </view>
+      <!-- 价格和头像 -->
+      <view
+        style="display:flex;"
+        class="card_footer"
+      >
+        <view class="card_price">
+          {{priceFomatter}}
+        </view>
 
-      <view class="card_icon">
-        <van-image
-          width="100%"
-          fit="widthFix"
-          :src="publisher.avatarUrl"
-          alt=""
-          round
-          lazy-load
-          @tap.stop="toUser(publisher._openid)"
-        ></van-image>
+        <view class="card_icon">
+          <van-image
+            width="100%"
+            fit="widthFix"
+            :src="publisher.avatarUrl"
+            alt=""
+            round
+            lazy-load
+            @tap.stop="toUser(publisher._openid)"
+          ></van-image>
+        </view>
       </view>
-    </view>
+    </van-skeleton>
   </view>
 </template>
 
@@ -69,7 +76,8 @@ wepy.component({
   },
   data: {
     conditions: CONDITONS,
-    abilities: ABILITIES
+    abilities: ABILITIES,
+    loading: true
   },
   computed: {
     priceFomatter() {
@@ -89,6 +97,12 @@ wepy.component({
         url: `/pages/goods/detail/index?dataId=${this.proId}`
       })
     }
+  },
+  ready() {
+    console.log('ready')
+    setTimeout(() => {
+      this.loading = false
+    }, 300)
   }
 })
 </script>
@@ -97,6 +111,7 @@ wepy.component({
   usingComponents:{
     "van-image": "~@/components/vant/image",
     "van-tag": "~@/components/vant/tag",
+    "van-skeleton": "~@/components/vant/skeleton/index"
 
 
   }

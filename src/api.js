@@ -148,18 +148,6 @@ export const uploadReply = async (data, id) => {
   })
 }
 
-// 发布商品
-export const uploadGoods = async (data, id) => {
-  return await wx.cloud.callFunction({
-    name: 'uploadGoods',
-    data: {
-      data, id
-    }
-  }).then(res => {
-    return res.result
-  })
-}
-
 export const getGoodsComments = async (data) => {
   return await wx.cloud.callFunction({
     name: 'getGoodsComments',

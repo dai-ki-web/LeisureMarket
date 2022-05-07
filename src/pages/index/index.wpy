@@ -67,11 +67,6 @@ wepy.page({
     console.log(res)
     this.goods = res
   }
-  // async onLoad() {
-  //   let res = await getAllGoods()
-  //   console.log(res)
-  //   this.goods = res
-  // }
 })
 </script>
 

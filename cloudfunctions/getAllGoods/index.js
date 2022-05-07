@@ -12,7 +12,7 @@ const $ = db.command.aggregate
 exports.main = async (event, context) => {
   const sheet = db.collection('goods-shelf')
   let res = await sheet.aggregate().match({
-    status: 0
+    status: 1
   }).lookup({
     from: 'users',
     let: {
@@ -25,6 +25,8 @@ exports.main = async (event, context) => {
       _openid: true
     }).done(),
     as: 'publisher'
+  }).sort({
+    createTime: -1
   }).project({
     publisher: true,
     introduction: true,

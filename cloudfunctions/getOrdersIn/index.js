@@ -10,7 +10,7 @@ const $ = db.command.aggregate
 
 // 云函数入口函数
 // 获取我买到的订单内容
-// status: 1 2 3
+// status: 1 2 3 0
 exports.main = async (event, context) => {
   let status = parseInt(event.status)
   console.log(status)
@@ -18,9 +18,18 @@ exports.main = async (event, context) => {
 
   // 在订单中查询step字段
   // 对结果按照productId查询商品信息
-  let { list } = await sheet.aggregate().match({
-    step: _.eq(status)
-  }).lookup({
+  let aggregate
+  if (status === 0) {
+    aggregate = sheet.aggregate().match({
+      step: _.gt(status)
+    })
+  } else {
+    aggregate = sheet.aggregate().match({
+      step: _.eq(status)
+    })
+  }
+
+  let { list } = await aggregate.lookup({
     from: 'goods-shelf',
     let: { productId: '$productId' },
     pipeline: $.pipeline().match(

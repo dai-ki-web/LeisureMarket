@@ -20,10 +20,10 @@
           <!-- title-class="cell_title"
            -->
           <van-checkbox
-              slot="title"
-              class="checkboxes-{{ index }}"
-              :name="dataIds[index]"
-            />
+            slot="title"
+            class="checkboxes-{{ index }}"
+            :name="dataIds[index]"
+          />
           <van-swipe-cell
             class="swipe-cell"
             :right-width="50"
@@ -57,7 +57,9 @@
       button-text="提交订单"
       @submit="onSubmit"
       custom-class="submit_bar"
+      button-class="submit_btn"
       bar-class="submit_body"
+      price-class="submit_price"
       placeholder
     >
       <van-checkbox
@@ -74,7 +76,6 @@
 <script>
 import wepy from '@wepy/core'
 import globalData from '@/globalData.js'
-import eventHub from '@/common/eventHub'
 import { getPurchaseGoodsData } from '@/api.js'
 import Dialog from '@/components/vant/dialog/dialog'
 
@@ -101,6 +102,13 @@ wepy.page({
         sum += item
       })
       return sum
+    },
+    // 检查是否全选
+    all() {
+      let length = this.dataIds.length
+      if (length) {
+        this.allChoose = this.result.length === length
+      }
     }
   },
   methods: {
@@ -204,6 +212,14 @@ wepy.page({
   // position: sticky !important;
   // bottom: 0px !important;
   padding-bottom: 60px;
+}
+.submit_btn {
+  background-color: #ffae00 !important;
+  border: none !important;
+  border-radius: 10px !important;
+}
+.submit_price {
+  color: #ffae00 !important;
 }
 .submit_body {
   align-items: baseline !important;

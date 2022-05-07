@@ -13,7 +13,7 @@ const $ = db.command.aggregate
 // 云函数入口函数
 // 查询每日发布数变化
 exports.main = async (event, context) => {
-  const range = 7
+  let { range } = event
   let clap = []
   let res = []
   for (let i = 0;i < range;i++) {

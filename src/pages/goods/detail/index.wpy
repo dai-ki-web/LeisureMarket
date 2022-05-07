@@ -1,8 +1,17 @@
 
 <template>
-  <view>
+  <view class="box">
     <navBar />
-
+    <view
+      class="content"
+      v-if="loading"
+    >
+      <van-loading
+        size="24px"
+        vertical
+        class="loading"
+      >加载中...</van-loading>
+    </view>
     <!-- 头像名字加关注 -->
     <view class="publisherBar">
       <van-image
@@ -14,7 +23,7 @@
         :src="publisherInfo.avatarUrl"
       />
       {{publisherInfo.nickName}}
-      <van-button>关注</van-button>
+      <!-- <van-button>关注</van-button> -->
     </view>
 
     <!-- 商品信息 -->
@@ -133,6 +142,7 @@ import eventHub from '@/common/eventHub'
 
 wepy.page({
   data: {
+    loading: true,
     countDown: 0,
     dataId: '',
     form: {},
@@ -265,6 +275,7 @@ wepy.page({
     this.form = goods
     this.publisherInfo = publisher
     this.comments = comments
+    this.loading = false
   },
   async onShow() {},
   onUnload() {
@@ -287,12 +298,16 @@ wepy.page({
     "van-field": "~@/components/vant/field",
     "van-empty": "~@/components/vant/empty",
     "comment-item": "~@/components/comment-item/index",
+    "van-loading": "~@/components/vant/loading/index",
 
   }
 }
 </config>
 
 <style lang="less" scoped>
+.box {
+  margin: 0 10px;
+}
 .publisherBar {
   display: flex;
   align-items: center;
@@ -309,7 +324,15 @@ wepy.page({
   padding: 3px 10px;
   font-size: 14px;
 }
-
+.content {
+  display: flex;
+  height: 80vh;
+  justify-content: center;
+  align-items: center;
+  .loading {
+    margin: 20px auto;
+  }
+}
 van-goods-action-icon {
   flex: 1;
 }

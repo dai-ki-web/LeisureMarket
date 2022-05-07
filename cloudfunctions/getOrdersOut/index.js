@@ -10,7 +10,7 @@ const $ = db.command.aggregate
 
 // 云函数入口函数
 // 获取我卖出的订单内容
-// status: ing finished
+// status: ing：1 finished：2  全部: 0
 exports.main = async (event, context) => {
   let { status } = event
   console.log(status)
@@ -18,7 +18,11 @@ exports.main = async (event, context) => {
 
   // 在订单中查询step字段   1，2未进行中；3为已完成
   let aggregate
-  if (status === 'ing') {
+  if (status === 0) {
+    aggregate = sheet.aggregate().match({
+      step: _.gt(status)
+    })
+  } else if (status === 1) {
     aggregate = sheet.aggregate().match({
       step: _.lt(3)
     })
@@ -56,7 +60,7 @@ exports.main = async (event, context) => {
     }).done(),
     as: 'buyer'
   }).replaceRoot({
-    newRoot: $.mergeObjects([$.arrayElemAt(['$puber', 0]), '$$ROOT'])
+    newRoot: $.mergeObjects([$.arrayElemAt(['$buyer', 0]), '$$ROOT'])
   }).project({
     buyer: false,
     item: false,

@@ -1,0 +1,168 @@
+<template>
+  <view>
+    <navBar title="身份认证"></navBar>
+
+    <view class="box">
+      <van-cell-group inset>
+        <van-field
+          :value="form.name"
+          required
+          label="姓名"
+          placeholder="请输入姓名"
+          @change="nameChange($event)"
+        />
+
+        <van-field
+          :value="form.studentNumber"
+          label="学号"
+          placeholder="请输入学号"
+          required
+          @change="numberChange($event)"
+        />
+        <van-field
+          label="上传图片"
+          required
+          :border="false"
+          class="img_up"
+        >
+          <view slot="input">
+            <van-uploader
+              :file-list="filelist"
+              @after-read="afterRead"
+              @delete="deleteImg"
+              max-count="1"
+            />
+          </view>
+
+        </van-field>
+      </van-cell-group>
+
+    </view>
+    <van-button
+      custom-style="width:70%;display: flex;align-items: center;margin:50px"
+      @tap="handleSubmit"
+      :disabled="pubDisable"
+      color="#ffae00"
+    >提交</van-button>
+    <van-toast id="van-toast" />
+
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core'
+import globalData from '@/globalData.js'
+import Toast from '@/components/vant/toast/toast'
+
+wepy.page({
+  data: {
+    filelist: [],
+    pubDisable: true,
+    form: {
+      name: '',
+      studentNumber: '',
+      file: {}
+    }
+  },
+  computed: {
+    formValid() {
+      console.log(this.form, this.filelist)
+      let valid =
+        !!this.form.name && !!this.form.studentNumber && !!this.filelist.length
+      this.pubDisable = !valid
+    }
+  },
+  methods: {
+    nameChange(e) {
+      this.form.name = e.$wx.detail.trim()
+    },
+    numberChange(e) {
+      this.form.studentNumber = e.$wx.detail.trim()
+    },
+    afterRead(e) {
+      let { file } = e.$wx.detail
+      console.log(file)
+      if (file.size > 1048576) {
+        Toast('大于1M的图片无法上传')
+      } else {
+        let { url } = file
+        this.filelist.push({ url })
+      }
+    },
+    deleteImg(e) {
+      let index = e.$wx.detail.index
+      this.filelist.splice(index, 1)
+    },
+    uploadFilePromise(fileName, chooseResult) {
+      return wx.cloud.uploadFile({
+        cloudPath: fileName,
+        filePath: chooseResult.url
+      })
+    },
+    async handleSubmit() {
+      if (!this.pubDisable) {
+        let users = wx.cloud.database().collection('users')
+        const { _id } = await globalData.userInfo()
+
+        // 上传图片
+        let uploadTasks = this.filelist.map((item, index) =>
+          this.uploadFilePromise(`${_id}-verify`, item)
+        )
+        Promise.all(uploadTasks)
+          .then(data => {
+            // Toast.success('上传成功')
+            let item = data[0]
+            this.form.file = { url: item.fileID }
+            users.doc(_id).update({
+              data: {
+                verify: this.form
+              },
+              success: res => {
+                wx.redirectTo({
+                  url: `/pages/index/index`
+                })
+              }
+            })
+          })
+          .catch(err => {
+            // Toast.success('上传失败',err)
+            console.log(err)
+          })
+      }
+    }
+  }
+})
+</script>
+<config>
+{
+  "usingComponents": {
+    "navBar":"~@/components/navBar/index",
+    "van-cell": "~@/components/vant/cell/index",
+    "van-cell-group": "~@/components/vant/cell-group/index",
+    "van-field": "~@/components/vant/field/index",
+    "van-uploader": "~@/components/vant/uploader/index",
+    "van-toast": '~@/components/vant/toast',
+    'van-button':'~@/components/vant/button',
+
+  }
+}
+</config>
+<style lang="less" scoped>
+.box {
+  height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.img_up {
+  .van-cell {
+    line-height: 95px !important;
+    .van-cell-value {
+      height: 95px !important;
+    }
+  }
+}
+.van-uploader__wrapper {
+  position: absolute;
+}
+</style>

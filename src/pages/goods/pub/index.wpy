@@ -63,10 +63,10 @@
       </van-cell>
     </van-cell-group>
     <van-button
-      type="primary"
       custom-style="width:70%;display: flex;align-items: center;margin:50px"
       @tap="handleSubmit"
       :disabled="pubDisable"
+      color="#ffae00"
     >发布</van-button>
 
     <!-- 弹出层 -->
@@ -241,7 +241,7 @@ wepy.component({
                 createTime: timeStamp,
                 productId,
                 view: 0,
-                status: 0,
+                status: 1,
                 headImg
               },
               success: res => {

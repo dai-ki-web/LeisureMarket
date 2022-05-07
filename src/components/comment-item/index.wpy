@@ -100,6 +100,7 @@ wepy.component({
 
     eventHub.$on('upgrade', async () => {
       res = await getReply({ id })
+      console.log(res)
       this.reply = res
     })
   }
